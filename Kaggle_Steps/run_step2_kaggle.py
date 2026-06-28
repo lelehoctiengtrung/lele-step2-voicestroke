@@ -34,10 +34,10 @@ def run_kaggle_kernel():
     
     # 3. Monitor run status
     kernel_slug = f"{kaggle_username}/step2-voicestroke"
-    print(f"🛰️ Monitoring Kaggle kernel '{kernel_slug}' (Timeout: 40 minutes)...")
+    print(f"🛰️ Monitoring Kaggle kernel '{kernel_slug}' (Timeout: 120 minutes)...")
     
     start_time = time.time()
-    timeout = 2400
+    timeout = 7200
     
     while time.time() - start_time < timeout:
         time.sleep(30)
