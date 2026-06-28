@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>chinese-stroke-order-generator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        html, body {
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            overflow: hidden;
+        }
+        body.preview-mode {
+            background: #87CEEB;
+        }
+        #canvas-container {
+            width: 500px;
+            height: 500px;
+            position: relative;
+        }
+        .grid-line {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.28);
+            pointer-events: none;
+            display: none;
+        }
+        body.preview-mode .grid-line {
+            display: block;
+        }
+        .grid-line.horizontal {
+            left: 0;
+            top: 50%;
+            width: 100%;
+            height: 2px;
+            transform: translateY(-50%);
+        }
+        .grid-line.vertical {
+            top: 0;
+            left: 50%;
+            width: 2px;
+            height: 100%;
+            transform: translateX(-50%);
+        }
+        .grid-line.diagonal {
+            top: 50%;
+            left: 50%;
+            width: 141.5%;
+            height: 2px;
+            transform-origin: center;
+        }
+        .grid-line.diagonal-a {
+            transform: translate(-50%, -50%) rotate(45deg);
+        }
+        .grid-line.diagonal-b {
+            transform: translate(-50%, -50%) rotate(-45deg);
+        }
+        .grid-border {
+            position: absolute;
+            inset: 0;
+            border: 2px solid rgba(255, 255, 255, 0.32);
+            pointer-events: none;
+            display: none;
+        }
+        body.preview-mode .grid-border {
+            display: block;
+        }
+        #character-container {
+            width: 500px;
+            height: 500px;
+            position: relative;
+        }
+
+    </style>
+</head>
+<body>
+    <div id="canvas-container">
+        <div class="grid-border"></div>
+        <div class="grid-line horizontal"></div>
+        <div class="grid-line vertical"></div>
+        <div class="grid-line diagonal diagonal-a"></div>
+        <div class="grid-line diagonal diagonal-b"></div>
+        <div id="character-container"></div>
+
+    </div>
+    <script>
+        // Mock requestAnimationFrame and performance.now BEFORE loading HanziWriter
+        const urlParamsMock = new URLSearchParams(window.location.search);
+        const useMock = urlParamsMock.get('mock') === '1';
+        let mockTime = 0;
+        if (useMock) {
+            console.log("Mocking requestAnimationFrame and performance.now BEFORE HanziWriter loads");
+            window.performance.now = () => mockTime;
+            window.Date.now = () => mockTime;
+            
+            let rafCallbacks = [];
+            window.requestAnimationFrame = (cb) => {
+                rafCallbacks.push(cb);
+                return rafCallbacks.length;
+            };
+            window.cancelAnimationFrame = (id) => {
+                rafCallbacks = [];
+            };
+            window.stepAnimation = (ms) => {
+                mockTime += ms;
+                const callbacks = rafCallbacks;
+                rafCallbacks = [];
+                for (let cb of callbacks) {
+                    try {
+                        cb(mockTime);
+                    } catch (e) {
+                        console.error("Error in RAF callback:", e);
+                    }
+                }
+            };
+        }
+    </script>
+    <script src="/node_modules/hanzi-writer/dist/hanzi-writer.min.js"></script>
+    <script>
+        // 从URL参数获取汉字
+        const urlParams = new URLSearchParams(window.location.search);
+        const character = urlParams.get('char') || '中';
+        const mode = urlParams.get('mode') || 'transparent';
+
+        if (mode === 'preview') {
+            document.body.classList.add('preview-mode');
+        }
+
+        const strokeAnimationDuration = 800; // Slow write speed (0.8s per stroke)
+        const delayBetweenStrokes = 200;       // Slow pause (0.2s pause between strokes)
+
+        const writer = HanziWriter.create('character-container', character, {
+            width: 500,
+            height: 500,
+            padding: 10,
+            strokeColor: '#E6392E', // Đỏ son
+            strokeWidth: 5,
+            showCharacter: false,
+            showOutline: false,
+            delayBetweenStrokes: delayBetweenStrokes,
+            delayBetweenLoops: 0,
+            strokeAnimationDuration: strokeAnimationDuration,
+            radicalColor: '#FF0000'
+        });
+        
+        // 暴露writer对象供外部访问
+        window.writer = writer;
+        window.loadError = null;
+
+        // 用于通知外部动画已准备好
+        window.animationReady = false;
+        window.animationStarted = false;
+        window.animationProgress = 0;
+        window.totalAnimationDuration = 10000; // Fallback default
+
+        // Load character data to compute dynamic duration
+        HanziWriter.loadCharacterData(character).then(function(charData) {
+            if (charData && charData.strokes) {
+                const strokeCount = charData.strokes.length;
+                // Total duration = stroke count * writing time + (stroke count - 1) * pause time + extra buffer
+                const calculatedDuration = (strokeCount * strokeAnimationDuration) + ((strokeCount - 1) * delayBetweenStrokes) + 800;
+                window.totalAnimationDuration = Math.max(calculatedDuration, 3000); // at least 3 seconds
+                console.log('Strokes count:', strokeCount, 'Dynamic animation duration:', window.totalAnimationDuration);
+            }
+            window.animationReady = true;
+        }).catch(function(err) {
+            console.error('Error loading character data:', err);
+            window.loadError = err.message || 'Error loading character';
+            window.animationReady = true;
+        });
+    </script>
+</body>
+</html>
+

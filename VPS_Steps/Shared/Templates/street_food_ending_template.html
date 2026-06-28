@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Street Food Carousel Ending</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800;900&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background-color: #050811; font-family: 'Be Vietnam Pro', 'Arial', sans-serif;
+        }
+
+        .canvas {
+            position: relative;
+            width: 1080px;
+            height: 1920px;
+            background-color: #fafaf9;
+            background-image: 
+                linear-gradient(rgba(148, 163, 184, 0.08) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.08) 2px, transparent 2px);
+            background-size: 30px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0) 65%, rgba(250,250,249,0.85) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Top Header Branding */
+        .brand-header {
+            margin-top: 150px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .brand-tag {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            background-color: #be123c; /* Rose-700 */
+            padding: 8px 24px;
+            border-radius: 50px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 12px rgba(190, 18, 60, 0.2);
+            margin-bottom: 24px;
+        }
+
+        /* Ending Message Title */
+        .thank-you-title {
+            font-size: 3.2rem;
+            font-weight: 900;
+            color: #be123c;
+            margin-top: 20px;
+            z-index: 5;
+            letter-spacing: 1px;
+            text-align: center;
+            line-height: 1.2;
+        }
+
+        /* Main Question Box */
+        .question-card {
+            margin-top: 150px;
+            width: 860px;
+            background: #ffffff;
+            border: 5px solid #0f172a;
+            border-radius: 30px;
+            padding: 60px 50px;
+            box-shadow: 15px 15px 0px #0f172a;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 5;
+            position: relative;
+        }
+
+        .question-card::before {
+            content: "✨";
+            position: absolute;
+            top: -40px;
+            font-size: 3rem;
+            background: #fafaf9;
+            padding: 0 15px;
+        }
+
+        .question-text-cn {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #0369a1; /* Sky-700 */
+            margin-bottom: 30px;
+            line-height: 1.3;
+        }
+
+        .question-text-vn {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #1e293b; /* Slate-800 */
+            line-height: 1.5;
+        }
+
+        .question-subtext {
+            margin-top: 35px;
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #be123c;
+            background: #ffe4e6;
+            padding: 8px 30px;
+            border-radius: 50px;
+            display: inline-block;
+        }
+
+        /* Social CTA Section */
+        .cta-section {
+            position: absolute;
+            bottom: 220px;
+            width: 860px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .cta-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #64748b;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+            margin-bottom: 25px;
+        }
+
+        .cta-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            width: 100%;
+            max-width: 600px;
+        }
+
+        .cta-item {
+            display: flex;
+            align-items: center;
+            background-color: #ffffff;
+            border: 2px solid #e2e8f0;
+            padding: 18px 24px;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            transition: all 0.2s ease;
+        }
+
+        .cta-icon {
+            font-size: 1.8rem;
+            margin-right: 18px;
+            width: 30px;
+            text-align: center;
+        }
+
+        .cta-label {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #94a3b8;
+            margin-right: 10px;
+            width: 90px;
+        }
+
+        .cta-value {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0f172a;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="canvas">
+        <div class="vignette"></div>
+
+        <!-- 1. Header & Brand -->
+        <div class="brand-header">
+            <div class="brand-tag">Lê Lê học tiếng Trung</div>
+            <h1 class="thank-you-title">CẢM ƠN CÁC BẠN ĐÃ XEM!</h1>
+        </div>
+
+        <!-- 2. Question Engagement Card -->
+        <div class="question-card">
+            <div class="question-text-cn">你下一期想看什么街头美食？</div>
+            <div class="question-text-vn">Bạn muốn Lê Lê giới thiệu món ăn đường phố của quốc gia nào tiếp theo?</div>
+            <div class="question-subtext">Hãy bình luận bên dưới nhé! 👇</div>
+        </div>
+
+        <!-- 3. Social media CTAs -->
+        <div class="cta-section">
+            <div class="cta-title">Kết nối cùng Lê Lê</div>
+            <div class="cta-container">
+                <div class="cta-item">
+                    <span class="cta-icon">🎵</span>
+                    <span class="cta-label">TikTok:</span>
+                    <span class="cta-value">@lelehoctiengtrung</span>
+                </div>
+                <div class="cta-item">
+                    <span class="cta-icon">🌐</span>
+                    <span class="cta-label">Website:</span>
+                    <span class="cta-value">lelehoctiengtrung.github.io</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

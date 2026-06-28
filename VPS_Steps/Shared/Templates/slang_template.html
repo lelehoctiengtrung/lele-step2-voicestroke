@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiếng Lóng & Mạng - Reel Template</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Noto+Serif+TC:wght@600;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background-color: #050811; font-family: 'Outfit', sans-serif;
+            color: #2c251f;
+        }
+
+        .reel-container {
+            position: relative;
+            width: 540px;
+            height: 960px;
+            background: linear-gradient(135deg, #ffe4e6 0%, #ffedd5 100%); /* Pastel rose/peach gradient */
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 8px #4c0519;
+        }
+
+        .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 400px;
+            height: 711.11px;
+            transform: scale(1.35);
+            transform-origin: top left;
+            z-index: 10;
+            display: flex; flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 24px 20px;
+        }
+
+        .header {
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 0;
+            width: 100%;
+        }
+
+        .series-title {
+            background: rgba(159, 18, 57, 0.08);
+            border: 1px solid rgba(159, 18, 57, 0.2);
+            padding: 4px 24px; border-radius: 30px;
+            color: #9f1239; font-weight: 800; letter-spacing: 2px; font-size: 0.8rem;
+            text-transform: uppercase;
+        }
+
+        /* Calligraphy Slang box */
+        .slang-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            margin-bottom: 8px;
+            animation: bounceIn 1s cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
+        }
+
+        .slang-title-box {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #9f1239;
+            text-shadow: 2px 2px 0px #fecdd3;
+            letter-spacing: 2px;
+            text-align: center;
+            margin-bottom: 4px;
+        }
+
+        .pinyin {
+            font-size: 1.15rem;
+            color: #4c0519;
+            font-weight: 800;
+            letter-spacing: 2px;
+            margin-bottom: 2px;
+        }
+
+        /* Illustration card - 9:16 aspect ratio vertical container */
+        .illustration-card {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1;
+            transition: opacity 1s ease;
+            overflow: hidden;
+            background: transparent;
+            border: none;
+        }
+
+        .illustration-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 16px rgba(159, 18, 57, 0.12));
+        }
+
+        .brand-tag {
+            font-size: 0.6rem;
+            color: #9f1239;
+            opacity: 0.55;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-align: center;
+            margin-top: 12px;
+            margin-bottom: 12px;
+            width: 100%;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Subtitle Container - Bottom Area */
+        .reel-subtitles {
+            width: 100%;
+            min-height: 80px;
+            margin-top: 10px;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: #4c0519;
+            z-index: 500;
+            padding: 10px 14px;
+            background: rgba(255, 255, 255, 0.35); /* Translucent background */
+            border-radius: 14px;
+            border: 1px solid rgba(159, 18, 57, 0.2); /* Thin border matching Title */
+            box-shadow: 0 4px 12px rgba(159, 18, 57, 0.05);
+            line-height: 1.6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 1; /* Always visible */
+            pointer-events: none;
+        }
+
+        .reel-subtitles-inner {
+            width: 100%;
+            max-height: 100%;
+            overflow: hidden;
+        }
+
+        .shake-active {
+            animation: cardShake 0.5s ease-in-out;
+        }
+
+        @keyframes cardShake {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(-3deg) scale(1.05); }
+            40% { transform: rotate(3deg) scale(1.05); }
+            60% { transform: rotate(-3deg); }
+            80% { transform: rotate(3deg); }
+        }
+
+        @keyframes bounceIn {
+            from { opacity: 0; transform: scale(0.3); }
+            50% { opacity: 0.9; transform: scale(1.1); }
+            70% { transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .storyboard-controls { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="reel-container" id="stage" data-composition-id="main" data-start="0" data-duration="40" data-width="540" data-height="960">
+        <div class="content">
+            <div class="header">
+                <div class="series-title">Tiếng Lóng & Mạng</div>
+            </div>
+
+            <div class="brand-tag">lelehoctiengtrung</div>
+
+            <!-- Slang Title -->
+            <div class="slang-wrapper" id="slang-title-wrapper">
+                <div class="slang-title-box">吃瓜</div>
+                <div class="pinyin">chī guā</div>
+            </div>
+
+            <!-- Slang Illustration -->
+            <div id="illustration-card" class="illustration-card">
+                <img src="cropped_transparent.png" alt="Slang Meme Illustration">
+            </div>
+
+            <div id="subtitles-box" class="reel-subtitles">
+                <div id="subtitles-inner" class="reel-subtitles-inner">Subtitles...</div>
+            </div>
+        </div>
+
+        <!-- Audio list is dynamic and will be injected here -->
+        <div style="display: none;">
+            <!-- AUDIO_PLACEHOLDER -->
+        </div>
+    </div>
+
+    <script>
+        const autoPlayTotalDuration = 40;
+        const mainTimeline = gsap.timeline({ paused: true });
+        
+        mainTimeline.to({}, { 
+            duration: autoPlayTotalDuration,
+            onUpdate: function() {
+                const currentTime = this.time();
+                setSimulationTime(currentTime);
+            }
+        });
+        
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = mainTimeline;
+
+        const subtitleData = [];
+        // COVER_TEXT_PLACEHOLDER
+
+        function setSimulationTime(time) {
+            const title = document.getElementById('slang-title-wrapper');
+            const card = document.getElementById('illustration-card');
+            
+            // Ensure card is immediately visible
+            if (card) card.style.opacity = '1';
+            
+            // First frame cover support
+            if (time === 0) {
+                if (title) {
+                    title.style.opacity = '1';
+                    title.style.transform = 'scale(1)';
+                }
+                updateSubtitles(0);
+                return;
+            }
+
+            // SHAKE ANIMATION TRIGGER
+            // SHAKE_TRIGGERS_PLACEHOLDER
+
+            updateSubtitles(time);
+        }
+
+        function updateSubtitles(time) {
+            const innerBox = document.getElementById('subtitles-inner');
+            const activeSub = subtitleData.find(s => time >= s.start && time < s.end);
+            
+            let textToShow = "";
+            if (activeSub) {
+                textToShow = activeSub.text;
+            } else if (subtitleData.length > 0) {
+                if (time >= subtitleData[subtitleData.length - 1].end) {
+                    textToShow = subtitleData[subtitleData.length - 1].text;
+                } else {
+                    textToShow = subtitleData[0].text;
+                }
+            }
+            
+            if (innerBox.innerHTML !== textToShow) {
+                innerBox.innerHTML = textToShow;
+            }
+        }
+
+        window.addEventListener("hf-seek", (e) => {
+            setSimulationTime(e.detail.time);
+        });
+    </script>
+</body>
+</html>

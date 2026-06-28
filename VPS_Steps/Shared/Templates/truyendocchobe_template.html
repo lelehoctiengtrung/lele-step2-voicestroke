@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Truyện Đọc Cho Bé - Reel Template</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;800;900&family=Quicksand:wght@500;700;800&family=Noto+Sans+SC:wght@500;800;900&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background-color: #0d0f14; font-family: 'Quicksand', sans-serif;
+            color: #2c251f;
+        }
+
+        .reel-container {
+            position: relative;
+            width: 540px;
+            height: 960px;
+            background: linear-gradient(135deg, #fffbf2 0%, #f7ebd3 100%);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 8px #f59e0b;
+        }
+
+        .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 400px;
+            height: 711.11px;
+            transform: scale(1.35);
+            transform-origin: top left;
+            z-index: 10;
+            display: flex; flex-direction: column;
+            justify-content: space-between;
+            align-items: center;
+            padding: 28px 24px 20px 24px;
+        }
+
+        .header {
+            display: flex; justify-content: center; align-items: center;
+            width: 100%;
+        }
+
+        .series-title {
+            background: rgba(245, 158, 11, 0.12);
+            border: 1.5px solid rgba(245, 158, 11, 0.4);
+            padding: 6px 28px; border-radius: 30px;
+            color: #b45309; font-weight: 800; letter-spacing: 2px; font-size: 0.85rem;
+            text-transform: uppercase;
+            font-family: 'Outfit', sans-serif;
+        }
+
+        /* Story container */
+        .story-view {
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            margin-top: 15px;
+            margin-bottom: 15px;
+            transition: all 0.5s ease;
+        }
+
+        /* Illustration frame */
+        .illustration-frame {
+            width: 320px;
+            height: 380px;
+            border-radius: 20px;
+            background: #ffffff;
+            box-shadow: 0 10px 25px rgba(180, 83, 9, 0.12);
+            border: 4px solid #ffffff;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+
+        .illustration-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: opacity 0.4s ease;
+        }
+
+        /* Dual-language Subtitle Box */
+        .story-subtitles {
+            width: 100%;
+            margin-top: 15px;
+            text-align: center;
+            padding: 12px 16px;
+            background: rgba(255, 255, 255, 0.7);
+            border-radius: 16px;
+            border: 1.5px solid rgba(245, 158, 11, 0.25);
+            box-shadow: 0 4px 15px rgba(180, 83, 9, 0.04);
+            min-height: 105px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .sub-zh {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: #78350f;
+            line-height: 1.4;
+            margin-bottom: 2px;
+        }
+
+        .sub-py {
+            font-size: 0.8rem;
+            color: #b45309;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .sub-vi {
+            font-size: 0.95rem;
+            color: #451a03;
+            font-weight: 700;
+            line-height: 1.3;
+        }
+
+        /* Vocab section view (Absolute overlay inside content) */
+        .vocab-view {
+            position: absolute;
+            top: 75px;
+            left: 20px;
+            right: 20px;
+            bottom: 20px;
+            display: none; /* Controlled by JS */
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            transition: all 0.5s ease;
+            z-index: 200;
+        }
+
+        .vocab-title {
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #78350f;
+            margin-bottom: 20px;
+            text-shadow: 1px 1px 0px #fef3c7;
+        }
+
+        .vocab-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .vocab-card {
+            background: #ffffff;
+            border-radius: 16px;
+            border: 2px solid rgba(245, 158, 11, 0.15);
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 10px rgba(180, 83, 9, 0.04);
+            transition: all 0.4s ease;
+        }
+
+        .vocab-card-left {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .vocab-card-zh {
+            font-family: 'Noto Sans SC', sans-serif;
+            font-size: 1.8rem;
+            font-weight: 900;
+            color: #78350f;
+            line-height: 1.2;
+        }
+
+        .vocab-card-py {
+            font-size: 0.85rem;
+            color: #b45309;
+            font-weight: 600;
+            margin-top: 2px;
+        }
+
+        .vocab-card-vi {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: #451a03;
+        }
+
+        /* Active highlight for vocabulary card */
+        .vocab-card.active {
+            transform: scale(1.05);
+            border-color: #f59e0b;
+            box-shadow: 0 8px 25px rgba(245, 158, 11, 0.25);
+            background: #fffdf5;
+        }
+
+        /* Brand Tag */
+        .brand-tag {
+            font-size: 0.65rem;
+            color: #b45309;
+            opacity: 0.5;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            font-family: 'Outfit', sans-serif;
+            margin-top: auto;
+            padding-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="reel-container" id="stage" data-composition-id="main" data-start="0" data-duration="40" data-width="540" data-height="960">
+        <div class="content">
+            <div class="header">
+                <div class="series-title">Truyện Đọc Cho Bé</div>
+            </div>
+
+            <!-- Main Story View -->
+            <div id="story-view" class="story-view">
+                <div class="illustration-frame">
+                    <img id="illustration-image" src="cropped_transparent_1.png" alt="Cảnh truyện">
+                </div>
+                <div class="story-subtitles">
+                    <div id="sub-zh" class="sub-zh">...</div>
+                    <div id="sub-py" class="sub-py">...</div>
+                    <div id="sub-vi" class="sub-vi">...</div>
+                </div>
+            </div>
+
+            <!-- Vocabulary View (Overlay) -->
+            <div id="vocab-view" class="vocab-view">
+                <div class="vocab-title">🧸 Từ Vựng Trong Truyện 📖</div>
+                <div class="vocab-list">
+                    <!-- VOCAB_LIST_PLACEHOLDER -->
+                </div>
+            </div>
+
+            <div class="brand-tag">lelehoctiengtrung</div>
+        </div>
+
+        <!-- Audio list is dynamic and will be injected here -->
+        <div style="display: none;">
+            <!-- AUDIO_PLACEHOLDER -->
+        </div>
+    </div>
+
+    <script>
+        const autoPlayTotalDuration = 40;
+        const mainTimeline = gsap.timeline({ paused: true });
+        
+        mainTimeline.to({}, { 
+            duration: autoPlayTotalDuration,
+            onUpdate: function() {
+                const currentTime = this.time();
+                setSimulationTime(currentTime);
+            }
+        });
+        
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = mainTimeline;
+
+        // Injected data arrays
+        const scenesTimings = [];
+        // SCENES_TIMINGS_PLACEHOLDER
+        
+        const vocabTimings = [];
+        // VOCAB_TIMINGS_PLACEHOLDER
+        
+        let vocabStartTime = 999;
+        // VOCAB_START_TIME_PLACEHOLDER
+
+        function setSimulationTime(time) {
+            const storyView = document.getElementById('story-view');
+            const vocabView = document.getElementById('vocab-view');
+            const img = document.getElementById('illustration-image');
+            
+            // Switch views between Story and Vocabulary Review
+            if (time >= vocabStartTime) {
+                if (storyView) storyView.style.display = 'none';
+                if (vocabView) vocabView.style.display = 'flex';
+                
+                // Highlight active vocabulary card
+                vocabTimings.forEach((v, idx) => {
+                    const card = document.getElementById(`vocab-card-${idx+1}`);
+                    if (card) {
+                        if (time >= v.start && time < v.end) {
+                            card.classList.add('active');
+                        } else {
+                            card.classList.remove('active');
+                        }
+                    }
+                });
+            } else {
+                if (storyView) storyView.style.display = 'flex';
+                if (vocabView) vocabView.style.display = 'none';
+                
+                // Find and update current active scene image and subtitles
+                const activeScene = scenesTimings.find(s => time >= s.start && time < s.end);
+                if (activeScene) {
+                    if (img && !img.src.endsWith(activeScene.image)) {
+                        img.src = activeScene.image;
+                    }
+                    document.getElementById('sub-zh').innerHTML = activeScene.text_zh;
+                    document.getElementById('sub-py').innerHTML = activeScene.text_py;
+                    document.getElementById('sub-vi').innerHTML = activeScene.text_vi;
+                } else if (scenesTimings.length > 0) {
+                    // Fallback to first scene
+                    const fallback = scenesTimings[0];
+                    if (img && !img.src.endsWith(fallback.image)) {
+                        img.src = fallback.image;
+                    }
+                    document.getElementById('sub-zh').innerHTML = fallback.text_zh;
+                    document.getElementById('sub-py').innerHTML = fallback.text_py;
+                    document.getElementById('sub-vi').innerHTML = fallback.text_vi;
+                }
+            }
+        }
+
+        window.addEventListener("hf-seek", (e) => {
+            setSimulationTime(e.detail.time);
+        });
+    </script>
+</body>
+</html>

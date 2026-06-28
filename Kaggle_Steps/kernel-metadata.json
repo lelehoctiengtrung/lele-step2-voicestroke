@@ -1,0 +1,13 @@
+{
+  "id": "letruong2704/step2-voicestroke",
+  "title": "step2-voicestroke",
+  "code_file": "step2_voice_stroke.ipynb",
+  "language": "python",
+  "kernel_type": "notebook",
+  "is_private": "false",
+  "enable_gpu": "true",
+  "enable_internet": "true",
+  "dataset_sources": [],
+  "kernel_sources": [],
+  "competition_sources": []
+}

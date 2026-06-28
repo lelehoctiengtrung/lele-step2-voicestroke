@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Street Food Carousel Cover</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800;900&family=Noto+Serif+TC:wght@900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background-color: #050811; font-family: 'Be Vietnam Pro', 'Arial', sans-serif;
+        }
+
+        .canvas {
+            position: relative;
+            width: 1080px;
+            height: 1920px;
+            background-color: #fafaf9;
+            background-image: 
+                linear-gradient(rgba(148, 163, 184, 0.08) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.08) 2px, transparent 2px);
+            background-size: 30px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        .vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0) 65%, rgba(250,250,249,0.85) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Top Header Branding */
+        .brand-header {
+            margin-top: 100px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+        }
+
+        .brand-tag {
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: #ffffff;
+            background-color: #be123c; /* Rose-700 */
+            padding: 8px 24px;
+            border-radius: 50px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 4px 12px rgba(190, 18, 60, 0.2);
+            margin-bottom: 24px;
+        }
+
+        /* Title Area */
+        .title-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            z-index: 5;
+            padding: 0 40px;
+        }
+
+        .main-title-cn {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 5.5rem;
+            font-weight: 900;
+            color: #0f172a;
+            position: relative;
+            display: inline-block;
+            line-height: 1.1;
+            letter-spacing: 2px;
+            margin-bottom: 15px;
+        }
+
+        .main-title-cn::after {
+            content: '';
+            position: absolute;
+            left: -15px;
+            right: -15px;
+            bottom: 8px;
+            height: 35px;
+            background-color: #fef08a; /* Yellow highlighter */
+            z-index: -1;
+            border-radius: 4px;
+            transform: rotate(-0.5deg);
+            opacity: 0.85;
+        }
+
+        .main-title-vn {
+            font-size: 2.8rem;
+            font-weight: 900;
+            color: #334155;
+            letter-spacing: 1px;
+            line-height: 1.2;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        /* Batch Stamp */
+        .batch-badge {
+            margin-top: 35px;
+            background: linear-gradient(135deg, #0ea5e9, #0284c7); /* Sky Blue */
+            color: white;
+            font-size: 2.2rem;
+            font-weight: 900;
+            padding: 12px 36px;
+            border-radius: 20px;
+            box-shadow: 0 10px 20px rgba(14, 165, 233, 0.25);
+            border: 4px solid #ffffff;
+            transform: rotate(-1.5deg);
+            letter-spacing: 1px;
+            z-index: 5;
+        }
+
+        /* 3-Cart Collage Area (Dàn ngang không chồng lấp) */
+        .collage-container {
+            position: absolute;
+            top: 750px;
+            width: 960px;
+            left: 60px;
+            height: 400px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 3;
+        }
+
+        .cart-wrapper {
+            width: 290px;
+            height: 290px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            filter: drop-shadow(0 15px 30px rgba(0, 0, 0, 0.08));
+        }
+
+        .collage-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        /* Footer swipe hint */
+        .swipe-hint {
+            position: absolute;
+            bottom: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: #1e293b; /* Slate-800 */
+            color: #ffffff;
+            font-size: 2.2rem;
+            font-weight: 800;
+            padding: 20px 48px;
+            border-radius: 50px;
+            box-shadow: 0 10px 25px rgba(30, 41, 59, 0.15);
+            z-index: 5;
+            border: 2px solid rgba(255,255,255,0.1);
+        }
+
+        .arrow-icon {
+            margin-left: 14px;
+            font-size: 2.4rem;
+            animation: bounceRight 1s infinite alternate;
+        }
+
+        @keyframes bounceRight {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(8px); }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="canvas">
+        <div class="vignette"></div>
+
+        <!-- 1. Header & Brand -->
+        <div class="brand-header">
+            <div class="brand-tag">Lê Lê học tiếng Trung</div>
+        </div>
+
+        <!-- 2. Main Typography -->
+        <div class="title-container">
+            <h1 class="main-title-cn">世界街头美食</h1>
+            <div class="main-title-vn">MÓN ĂN ĐƯỜNG PHỐ THẾ GIỚI</div>
+            <div class="batch-badge">Streetfood #{{BATCH_NUMBER}}</div>
+        </div>
+
+        <!-- 3. Dynamic 3-Cart Collage -->
+        <div class="collage-container">
+            <div class="cart-wrapper">
+                <img class="collage-img" src="{{CART_1}}" alt="Cart Left">
+            </div>
+            
+            <div class="cart-wrapper">
+                <img class="collage-img" src="{{CART_2}}" alt="Cart Center">
+            </div>
+
+            <div class="cart-wrapper">
+                <img class="collage-img" src="{{CART_3}}" alt="Cart Right">
+            </div>
+        </div>
+
+        <!-- 4. Swipe CTA -->
+        <div class="swipe-hint">
+            Vuốt để xem chi tiết <span class="arrow-icon">➡️</span>
+        </div>
+    </div>
+
+</body>
+</html>

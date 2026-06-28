@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Món Ăn Đường Phố Thế Giới</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700;800;900&family=Noto+Serif+TC:wght@600;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background-color: #050811; font-family: 'Be Vietnam Pro', 'Arial', sans-serif;
+        }
+
+        .canvas {
+            position: relative;
+            width: 1080px;
+            height: 1920px;
+            /* Whiteboard grid pattern background */
+            background-color: #fafaf9;
+            background-image: 
+                linear-gradient(rgba(148, 163, 184, 0.08) 2px, transparent 2px),
+                linear-gradient(90deg, rgba(148, 163, 184, 0.08) 2px, transparent 2px);
+            background-size: 30px 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            overflow: hidden;
+        }
+
+        /* Decorative Grid Vignette */
+        .vignette {
+            position: absolute;
+            inset: 0;
+            background: radial-gradient(circle, rgba(255,255,255,0) 60%, rgba(250,250,249,0.8) 100%);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* Center Title Area */
+        .info-container {
+            position: absolute;
+            top: 1200px;
+            left: 540px;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 5;
+            width: 600px;
+            text-align: center;
+        }
+
+        /* Large Chinese food name with highlighter stroke */
+        .food-cn {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 4.8rem;
+            font-weight: 900;
+            color: #0f172a;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 12px;
+            z-index: 2;
+            line-height: 1.2;
+            letter-spacing: 1px;
+        }
+        .food-cn::after {
+            content: '';
+            position: absolute;
+            left: -8px;
+            right: -8px;
+            bottom: 6px;
+            height: 30px;
+            background-color: #fef08a; /* Yellow highlighter */
+            z-index: -1;
+            border-radius: 4px;
+            transform: rotate(-0.8deg);
+            opacity: 0.85;
+        }
+
+        /* Pinyin & Vietnamese Names */
+        .food-pinyin {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #7c2d12;
+            margin-bottom: 8px;
+            background: #ffedd5;
+            padding: 3px 14px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+
+        .food-vn {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #334155;
+            line-height: 1.3;
+            max-width: 100%;
+        }
+        .food-vn-sub {
+            font-size: 1.8rem;
+            font-weight: 600;
+            color: #475569;
+            display: block;
+            margin-top: 4px;
+            white-space: nowrap;
+        }
+
+        /* Central Illustration - Food Cart */
+        .cart-container {
+            position: absolute;
+            top: 340px;
+            left: 108px;
+            width: 864px;
+            height: 864px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 3;
+        }
+
+        .cart-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 25px 40px rgba(0, 0, 0, 0.08));
+        }
+
+        /* 12 Floating Item Slots */
+        .item-slot {
+            position: absolute;
+            width: 260px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 4;
+            text-align: center;
+        }
+
+        /* Positioning the 12 slots symmetrically flanking the center */
+        /* Left Column slots */
+        .slot-1  { top: 40px;   left: 240px; }
+        .slot-3  { top: 320px;  left: 30px; }
+        .slot-5  { top: 590px;  left: 15px; }
+        .slot-7  { top: 860px;  left: 15px; }
+        .slot-9  { top: 1130px; left: 30px; }
+        .slot-11 { top: 1460px; left: 240px; }
+
+        /* Right Column slots */
+        .slot-2  { top: 40px;   right: 240px; }
+        .slot-4  { top: 320px;  right: 30px; }
+        .slot-6  { top: 590px;  right: 15px; }
+        .slot-8  { top: 860px;  right: 15px; }
+        .slot-10 { top: 1130px; right: 30px; }
+        .slot-12 { top: 1460px; right: 240px; }
+
+        /* Item Image Container */
+        .item-image-container {
+            width: 200px;
+            height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            margin-bottom: 4px;
+        }
+
+        .item-image {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.06));
+        }
+
+        /* Item Chinese Name with highlighter */
+        .item-cn {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: #0f172a;
+            position: relative;
+            display: inline-block;
+            margin-bottom: 4px;
+            z-index: 2;
+        }
+        .item-cn::after {
+            content: '';
+            position: absolute;
+            left: -4px;
+            right: -4px;
+            bottom: 3px;
+            height: 9px;
+            background-color: #fef08a;
+            z-index: -1;
+            border-radius: 2px;
+            transform: rotate(-1.5deg);
+            opacity: 0.85;
+        }
+
+        /* Item English/Vietnamese Label Details */
+        .item-detail {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #475569;
+            line-height: 1.2;
+            max-width: 250px;
+        }
+        .item-vn-sub {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #64748b;
+            display: block;
+            margin-top: 2px;
+            white-space: nowrap;
+        }
+
+        .item-py {
+            display: block;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #94a3b8;
+            margin-top: 1px;
+        }
+
+        /* Top Watermark */
+        .watermark-container {
+            position: absolute;
+            top: 310px;
+            left: 540px;
+            transform: translateX(-50%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+
+        .watermark {
+            font-size: 1.3rem;
+            color: #9f1239;
+            opacity: 0.5;
+            font-weight: 800;
+            letter-spacing: 4px;
+            text-transform: lowercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="canvas">
+        <div class="vignette"></div>
+
+        <!-- 1. Central Cart Illustration -->
+        <div class="cart-container">
+            <img class="cart-image" src="cropped_transparent_A.png" alt="Street Food Cart">
+        </div>
+
+        <!-- 2. Food Title Block (Below Cart) -->
+        <div class="info-container">
+            <h1 class="food-cn">泰式炒金边粉</h1>
+            <div class="food-pinyin">tài shì chǎo jīn biān fěn</div>
+            <div class="food-vn">Phở xào kiểu Thái (Pad Thai)</div>
+        </div>
+
+        <!-- 3. Flanking 12 Floating Item Slots -->
+        <!-- Slot 1 (Top Left) -->
+        <div class="item-slot slot-1">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_1.png" alt="Item 1">
+            </div>
+            <div class="item-cn">ING1_CN</div>
+            <div class="item-detail">
+                ING1_VN
+                <span class="item-py">(ING1_PY)</span>
+            </div>
+        </div>
+
+        <!-- Slot 2 (Top Right) -->
+        <div class="item-slot slot-2">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_2.png" alt="Item 2">
+            </div>
+            <div class="item-cn">ING2_CN</div>
+            <div class="item-detail">
+                ING2_VN
+                <span class="item-py">(ING2_PY)</span>
+            </div>
+        </div>
+
+        <!-- Slot 3 (Upper Mid Left) -->
+        <div class="item-slot slot-3">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_3.png" alt="Item 3">
+            </div>
+            <div class="item-cn">ING3_CN</div>
+            <div class="item-detail">
+                ING3_VN
+                <span class="item-py">(ING3_PY)</span>
+            </div>
+        </div>
+
+        <!-- Slot 4 (Upper Mid Right) -->
+        <div class="item-slot slot-4">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_4.png" alt="Item 4">
+            </div>
+            <div class="item-cn">ING4_CN</div>
+            <div class="item-detail">
+                ING4_VN
+                <span class="item-py">(ING4_PY)</span>
+            </div>
+        </div>
+
+        <!-- Slot 5 (Mid Left) -->
+        <div class="item-slot slot-5">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_5.png" alt="Item 5">
+            </div>
+            <div class="item-cn">ING5_CN</div>
+            <div class="item-detail">
+                ING5_VN
+                <span class="item-py">(ING5_PY)</span>
+            </div>
+        </div>
+
+        <!-- Slot 6 (Mid Right) -->
+        <div class="item-slot slot-6">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_6.png" alt="Item 6">
+            </div>
+            <div class="item-cn">ING6_CN</div>
+            <div class="item-detail">
+                ING6_VN
+                <span class="item-py">(ING6_PY)</span>
+            </div>
+        </div>
+
+        <!-- Slot 7 (Lower Mid Left) -->
+        <div class="item-slot slot-7">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_7.png" alt="Item 7">
+            </div>
+            <div class="item-cn">ING7_CN</div>
+            <div class="item-detail">
+                ING7_VN
+                <span class="item-py">(ING7_PY)</span>
+            </div>
+        </div>
+
+        <!-- Slot 8 (Lower Mid Right) -->
+        <div class="item-slot slot-8">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_8.png" alt="Item 8">
+            </div>
+            <div class="item-cn">ING8_CN</div>
+            <div class="item-detail">
+                ING8_VN
+                <span class="item-py">(ING8_PY)</span>
+            </div>
+        </div>
+
+        <!-- Slot 9 (Bottom Mid Left) -->
+        <div class="item-slot slot-9">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_9.png" alt="Item 9">
+            </div>
+            <div class="item-cn">ING9_CN</div>
+            <div class="item-detail">
+                ING9_VN
+                <span class="item-py">(ING9_PY)</span>
+            </div>
+        </div>
+
+        <!-- Slot 10 (Bottom Mid Right) -->
+        <div class="item-slot slot-10">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_10.png" alt="Item 10">
+            </div>
+            <div class="item-cn">ING10_CN</div>
+            <div class="item-detail">
+                ING10_VN
+                <span class="item-py">(ING10_PY)</span>
+            </div>
+        </div>
+
+        <!-- Slot 11 (Bottom Left) -->
+        <div class="item-slot slot-11">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_11.png" alt="Item 11">
+            </div>
+            <div class="item-cn">ING11_CN</div>
+            <div class="item-detail">
+                ING11_VN
+                <span class="item-py">(ING11_PY)</span>
+            </div>
+        </div>
+
+        <!-- Slot 12 (Bottom Right) -->
+        <div class="item-slot slot-12">
+            <div class="item-image-container">
+                <img class="item-image" src="cropped_transparent_ing_12.png" alt="Item 12">
+            </div>
+            <div class="item-cn">ING12_CN</div>
+            <div class="item-detail">
+                ING12_VN
+                <span class="item-py">(ING12_PY)</span>
+            </div>
+        </div>
+
+        <!-- 4. Watermark -->
+        <div class="watermark-container">
+            <span class="watermark">lelehoctiengtrung</span>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,559 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chuyện Thành Ngữ - Reel Template</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background-color: #050811; font-family: 'Outfit', sans-serif;
+            color: #ffffff;
+        }
+
+        .reel-container {
+            position: relative;
+            width: 540px;
+            height: 960px;
+            /* Premium dark warm-charcoal-gold theme from the website design */
+            background-color: #161310;
+            background-image: 
+                radial-gradient(circle at 10% 15%, rgba(212, 168, 67, 0.35) 0%, transparent 65%),
+                radial-gradient(circle at 90% 45%, rgba(201, 69, 53, 0.15) 0%, transparent 65%),
+                radial-gradient(circle at 25% 85%, rgba(212, 168, 67, 0.12) 0%, transparent 65%),
+                linear-gradient(180deg, #161310 0%, #0f0d0b 100%);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 8px #161310;
+        }
+
+        /* Premium noise overlay to blend colors and add texture */
+        .reel-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            opacity: 0.04;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 400px;
+            height: 711.11px;
+            transform: scale(1.35);
+            transform-origin: top left;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 25px 20px;
+        }
+
+        .bg-glow {
+            position: absolute; width: 350px; height: 350px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(212, 168, 67, 0.05) 0%, rgba(212, 168, 67, 0) 70%);
+            top: -50px; right: -50px;
+        }
+
+        .header {
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        .series-title {
+            background: rgba(212, 168, 67, 0.04);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(212, 168, 67, 0.18);
+            padding: 0 24px; border-radius: 30px;
+            color: #fbbf24; font-weight: 700; letter-spacing: 2.5px; font-size: 0.85rem;
+            text-transform: uppercase; box-shadow: 0 4px 15px rgba(212, 168, 67, 0.05);
+            display: flex;
+            align-items: center;
+            height: 42px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Idiom large characters box */
+        .idiom-box {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            margin-bottom: 8px;
+        }
+
+        .idiom-char {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 2.2rem;
+            font-weight: 900;
+            color: #fbbf24; /* Warm Gold */
+            background: rgba(22, 19, 16, 0.6); /* Translucent warm dark filling matching website --clr-bg */
+            border: 1.5px solid rgba(212, 168, 67, 0.35); /* website gold border */
+            width: 55px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25), inset 0 0 10px rgba(212, 168, 67, 0.05);
+        }
+
+        .idiom-meta {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        .pinyin {
+            font-family: 'Arial', sans-serif;
+            font-size: 1.05rem; color: #ffffff; font-weight: normal; letter-spacing: 3px;
+            margin-bottom: 2px;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .meaning {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.9rem; color: #fbbf24; font-weight: normal; text-transform: uppercase; letter-spacing: 2px;
+            text-align: center;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Large illustration card */
+        .illustration-card {
+            width: 100%;
+            height: 240px;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 1; /* Always visible */
+        }
+
+        .illustration-card img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 10px 20px rgba(0, 0, 0, 0.45));
+        }
+
+        /* Brand watermark */
+        .brand-tag {
+            font-size: 0.6rem;
+            color: #fbbf24;
+            opacity: 0.55;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-align: center;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        /* Subtitle Container - Bottom 30% Area */
+        .reel-subtitles {
+            width: 360px;
+            flex-grow: 1;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            position: relative;
+            overflow: hidden;
+            z-index: 500;
+            padding: 10px 0;
+            background: transparent;
+            border: 2px solid rgba(212, 168, 67, 0.25); /* Website gold border */
+            border-radius: 16px;
+            opacity: 1; /* Frame is always visible from time 0 */
+            pointer-events: none;
+        }
+
+        .subtitles-mask {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: relative;
+            -webkit-mask-image: linear-gradient(to bottom, transparent 0%, white 25%, white 75%, transparent 100%);
+            mask-image: linear-gradient(to bottom, transparent 0%, white 25%, white 75%, transparent 100%);
+        }
+
+        .reel-subtitles-inner {
+            width: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            transition: opacity 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            opacity: 0; /* Hidden by default during intro */
+        }
+
+        .meaning-explanation-box {
+            position: absolute;
+            inset: 0;
+            display: none; /* hidden by default */
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 25px;
+            font-family: 'Arial', sans-serif;
+            z-index: 600;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .explanation-subheading {
+            font-size: 0.92rem;
+            font-weight: bold;
+            color: #fbbf24; /* Warm Gold */
+            margin-bottom: 12px;
+            text-align: center;
+            letter-spacing: 1px;
+            width: 100%;
+        }
+
+        .explanation-content {
+            font-size: 0.85rem;
+            font-weight: normal;
+            color: #ffffff; /* Clean white */
+            line-height: 1.6;
+            text-align: justify;
+            width: 100%;
+        }
+
+        .sub-line {
+            font-family: 'Arial', sans-serif; /* Standard Arial font */
+            font-size: 0.85rem;
+            font-weight: normal; /* Arial Regular */
+            line-height: 1.5;
+            color: rgba(255, 255, 255, 0.4); /* Faint white on dark background */
+            transition: color 0.15s ease;
+            width: 100%;
+            text-align: center;
+            padding: 0 10px;
+        }
+
+        .sub-line.active-line {
+            color: #ffd700; /* Rich gold active text */
+            text-shadow: 0 0 8px rgba(255, 215, 0, 0.6);
+            transform: scale(1.06); /* Scale up slightly for center focus */
+            font-weight: normal;
+        }
+
+        .flash-active {
+            animation: highlightFlash 1.5s ease-in-out;
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        @keyframes highlightFlash {
+            0%, 100% { background-color: transparent; transform: scale(1); }
+            50% { background-color: rgba(251, 191, 36, 0.15); transform: scale(1.05); border-radius: 8px; }
+        }
+
+        .storyboard-controls { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="reel-container" id="stage" data-composition-id="main" data-start="0" data-duration="40" data-width="540" data-height="960">
+        <div class="bg-glow"></div>
+        <div class="content">
+            <div class="header">
+                <div class="series-title">Chuyện Thành Ngữ</div>
+            </div>
+
+            <!-- 4 Characters for Idiom -->
+            <div class="idiom-box">
+                <div class="idiom-char">亡</div>
+                <div class="idiom-char">羊</div>
+                <div class="idiom-char">补</div>
+                <div class="idiom-char">牢</div>
+            </div>
+
+            <div class="idiom-meta" id="idiom-meta-block" style="opacity: 1;">
+                <div class="pinyin">wáng yáng bǔ láo</div>
+                <div class="meaning">Mất bò mới lo làm chuồng</div>
+            </div>
+
+            <div id="illustration-card" class="illustration-card">
+                <img src="cropped_transparent.png" alt="Idiom Illustration">
+            </div>
+
+            <div class="brand-tag">lelehoctiengtrung</div>
+
+            <div id="subtitles-box" class="reel-subtitles">
+                <div id="subtitles-mask-el" class="subtitles-mask">
+                    <div id="subtitles-inner" class="reel-subtitles-inner"></div>
+                </div>
+                <div id="explanation-block-el" class="meaning-explanation-box"></div>
+            </div>
+        </div>
+
+        <!-- Audio list is dynamic and will be injected here -->
+        <div style="display: none;">
+            <!-- AUDIO_PLACEHOLDER -->
+        </div>
+    </div>
+
+    <script>
+        const autoPlayTotalDuration = 40;
+        const mainTimeline = gsap.timeline({ paused: true });
+        
+        mainTimeline.to({}, { 
+            duration: autoPlayTotalDuration,
+            onUpdate: function() {
+                const currentTime = this.time();
+                setSimulationTime(currentTime);
+            }
+        });
+        
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = mainTimeline;
+
+        // Will be replaced by timeline generator
+        const subtitleData = [];
+
+        // Parse raw subtitleData into short phrases
+        let flatPhrases = [];
+        let storyStartTime = 0;
+        let storyEndTime = 0;
+        let explanationText = "";
+        
+        function initSubtitles() {
+            flatPhrases = [];
+            
+            if (subtitleData.length < 3) return;
+            
+            // The story part is exactly subtitleData[2]
+            const storyPart = subtitleData[2];
+            if (storyPart) {
+                storyStartTime = storyPart.start;
+                storyEndTime = storyPart.end;
+                
+                const phrases = splitIntoPhrases(storyPart.text, storyPart.start, storyPart.end);
+                phrases.forEach(p => {
+                    p.globalIdx = flatPhrases.length;
+                    flatPhrases.push(p);
+                });
+            }
+            
+            // The explanation part is subtitleData[3]
+            const explanationPart = subtitleData[3];
+            if (explanationPart) {
+                const fullText = explanationPart.text;
+                // Split by "Người Trung Quốc" or "người Trung Quốc" (case insensitive)
+                let rawExplanation = "";
+                const splitIndex = fullText.search(/người\s+trung\s+quốc/i);
+                if (splitIndex !== -1) {
+                    rawExplanation = fullText.slice(0, splitIndex).trim();
+                } else {
+                    const viDuIndex = fullText.search(/ví\s+dụ/i);
+                    if (viDuIndex !== -1) {
+                        rawExplanation = fullText.slice(0, viDuIndex).trim();
+                    } else {
+                        rawExplanation = fullText;
+                    }
+                }
+                
+                // Now split rawExplanation into heading and content.
+                // Typically starts with "Thành ngữ này có nghĩa là: "
+                const colonIndex = rawExplanation.indexOf("nghĩa là:");
+                if (colonIndex !== -1) {
+                    const headingText = rawExplanation.slice(0, colonIndex + 9).trim(); // "Thành ngữ này có nghĩa là:"
+                    const contentText = rawExplanation.slice(colonIndex + 9).trim();
+                    explanationText = `
+                        <div class="explanation-subheading">${headingText}</div>
+                        <div class="explanation-content">${contentText}</div>
+                    `;
+                } else {
+                    // Try splitting at "nghĩa là"
+                    const meanIndex = rawExplanation.indexOf("nghĩa là");
+                    if (meanIndex !== -1) {
+                        const headingText = rawExplanation.slice(0, meanIndex + 8).trim() + ":";
+                        const contentText = rawExplanation.slice(meanIndex + 8).trim();
+                        explanationText = `
+                            <div class="explanation-subheading">${headingText}</div>
+                            <div class="explanation-content">${contentText}</div>
+                        `;
+                    } else {
+                        explanationText = `
+                            <div class="explanation-content">${rawExplanation}</div>
+                        `;
+                    }
+                }
+            }
+            
+            renderAllLines();
+        }
+
+        function splitIntoPhrases(text, start, end) {
+            const words = text.trim().split(/\s+/);
+            const totalWords = words.length;
+            const duration = end - start;
+            
+            let phrases = [];
+            let currentPhrase = [];
+            let wordStartIndex = 0;
+            
+            for (let i = 0; i < words.length; i++) {
+                currentPhrase.push(words[i]);
+                const lastChar = words[i].slice(-1);
+                const isPunctuation = /[.,!?;:]/.test(lastChar);
+                
+                if (isPunctuation || currentPhrase.length >= 8 || i === words.length - 1) {
+                    const phraseText = currentPhrase.join(' ');
+                    const phraseWordCount = currentPhrase.length;
+                    
+                    const pStart = start + (wordStartIndex / totalWords) * duration;
+                    const pEnd = start + ((wordStartIndex + phraseWordCount) / totalWords) * duration;
+                    
+                    phrases.push({
+                        text: phraseText,
+                        start: pStart,
+                        end: pEnd,
+                        words: [...currentPhrase]
+                    });
+                    
+                    wordStartIndex += phraseWordCount;
+                    currentPhrase = [];
+                }
+            }
+            return phrases;
+        }
+
+        function renderAllLines() {
+            const innerBox = document.getElementById('subtitles-inner');
+            innerBox.innerHTML = flatPhrases.map(p => `
+                <div class="sub-line" id="line-${p.globalIdx}">
+                    ${p.text}
+                </div>
+            `).join('');
+            
+            const explanationBox = document.getElementById('explanation-block-el');
+            if (explanationBox) {
+                explanationBox.innerHTML = explanationText;
+            }
+        }
+
+        let lastActivePhrase = null;
+
+        function setSimulationTime(time) {
+            // FLASH ANIMATION TRIGGER
+            // FLASH_TRIGGERS_PLACEHOLDER
+
+            updateSubtitles(time);
+        }
+
+        function updateSubtitles(time) {
+            const subBox = document.getElementById('subtitles-box');
+            const innerBox = document.getElementById('subtitles-inner');
+            const maskEl = document.getElementById('subtitles-mask-el');
+            const explanationBox = document.getElementById('explanation-block-el');
+            
+            if (flatPhrases.length === 0 && subtitleData.length > 0) {
+                initSubtitles();
+            }
+            
+            // 1. Before story starts
+            if (time < storyStartTime) {
+                if (maskEl) {
+                    maskEl.style.display = 'none';
+                    maskEl.style.opacity = '0';
+                }
+                if (explanationBox) {
+                    explanationBox.style.display = 'none';
+                    explanationBox.style.opacity = '0';
+                }
+                innerBox.style.opacity = '0';
+                return;
+            }
+            
+            // 2. During story
+            if (time >= storyStartTime && time < storyEndTime) {
+                if (explanationBox) {
+                    explanationBox.style.display = 'none';
+                    explanationBox.style.opacity = '0';
+                }
+                if (maskEl) {
+                    maskEl.style.display = 'block';
+                    maskEl.style.opacity = '1';
+                }
+                innerBox.style.opacity = '1';
+                
+                const activePhrase = flatPhrases.find(p => time >= p.start && time < p.end);
+                if (activePhrase) {
+                    const activeIdx = activePhrase.globalIdx;
+                    
+                    document.querySelectorAll('.sub-line').forEach((line, idx) => {
+                        if (idx === activeIdx) {
+                            line.classList.add('active-line');
+                        } else {
+                            line.classList.remove('active-line');
+                        }
+                    });
+                    
+                    const activeLine = document.getElementById(`line-${activeIdx}`);
+                    if (activeLine) {
+                        const containerHeight = subBox.clientHeight;
+                        const lineOffsetTop = activeLine.offsetTop;
+                        const lineHeight = activeLine.clientHeight;
+                        const targetY = containerHeight / 2 - lineOffsetTop - lineHeight / 2;
+                        
+                        let currentY = targetY;
+                        if (activeIdx > 0) {
+                            const prevLine = document.getElementById(`line-${activeIdx - 1}`);
+                            if (prevLine) {
+                                const prevLineOffsetTop = prevLine.offsetTop;
+                                const prevLineHeight = prevLine.clientHeight;
+                                const prevTargetY = containerHeight / 2 - prevLineOffsetTop - prevLineHeight / 2;
+                                
+                                const transitionDuration = 0.35; // seconds
+                                const elapsed = time - activePhrase.start;
+                                if (elapsed < transitionDuration) {
+                                    const t = elapsed / transitionDuration;
+                                    const easedT = t * t * (3 - 2 * t); // Smoothstep
+                                    currentY = prevTargetY + (targetY - prevTargetY) * easedT;
+                                }
+                            }
+                        }
+                        innerBox.style.transform = `translateY(${currentY}px)`;
+                    }
+                }
+                return;
+            }
+            
+            // 3. During explanation
+            if (time >= storyEndTime) {
+                if (maskEl) {
+                    maskEl.style.display = 'none';
+                    maskEl.style.opacity = '0';
+                }
+                if (explanationBox) {
+                    explanationBox.style.display = 'flex';
+                    explanationBox.style.opacity = '1';
+                }
+                innerBox.style.opacity = '0';
+            }
+        }
+
+        window.addEventListener("hf-seek", (e) => {
+            setSimulationTime(e.detail.time);
+        });
+    </script>
+</body>
+</html>

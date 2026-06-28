@@ -1,0 +1,29 @@
+name: Step 2 - Voice & Stroke Generation (Kaggle GPU)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  run-step2:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install kaggle
+
+      - name: Execute Kaggle Kernel
+        env:
+          KAGGLE_USERNAME: letruong2704
+          KAGGLE_KEY: 7013edc3b6c86af875aed05f9f89e150
+        run: |
+          python Kaggle_Steps/run_step2_kaggle.py

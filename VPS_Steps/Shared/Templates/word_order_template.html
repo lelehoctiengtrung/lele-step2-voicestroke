@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trật Tự Từ Rất Quan Trọng</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;600;700;800;900&family=Noto+Serif+TC:wght@600;800;900&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background-color: #050811; font-family: 'Arial', sans-serif;
+        }
+
+        .canvas {
+            position: relative;
+            width: 1080px;
+            height: 1080px;
+            background: linear-gradient(135deg, #fff1f2 0%, #fff7ed 50%, #fef3c7 100%); /* Premium peach-cream pastel gradient */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 50px 40px;
+            overflow: hidden;
+        }
+
+        /* Top Header Title */
+        .header-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 20px;
+            z-index: 10;
+        }
+
+        /* Watermark container directly under title box */
+        .watermark-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 24px;
+            z-index: 10;
+        }
+
+        .header-title {
+            background: rgba(159, 18, 57, 0.06);
+            border: 2.5px solid rgba(159, 18, 57, 0.18);
+            padding: 14px 50px;
+            border-radius: 40px;
+            color: #9f1239;
+            font-weight: 900;
+            letter-spacing: 2px;
+            font-size: 2.2rem;
+            text-transform: uppercase;
+            box-shadow: 0 4px 15px rgba(159, 18, 57, 0.04);
+            text-shadow: 1px 1px 0px rgba(255, 255, 255, 0.8);
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Main Content split side-by-side */
+        .main-content {
+            display: flex;
+            width: 100%;
+            flex: 1;
+            justify-content: space-between;
+            align-items: stretch;
+            padding: 0 10px;
+        }
+
+        /* Columns */
+        .column {
+            width: 460px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .divider {
+            width: 0;
+            border-left: 3px dotted rgba(159, 18, 57, 0.2);
+            height: 820px;
+            margin-top: 10px;
+        }
+
+        /* Pinyin section */
+        .pinyin-container {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 22px;
+        }
+
+        .pinyin-box {
+            background-color: #ffedd5;
+            border: 1.5px solid #fed7aa;
+            padding: 6px 18px;
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: 800;
+            color: #7c2d12;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.03);
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Hanzi grid */
+        .hanzi-container {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 26px;
+        }
+
+        .hanzi-box {
+            position: relative;
+            width: 160px;
+            height: 160px;
+            background: #ffffff;
+            border: 2px solid #cbd5e1;
+            border-radius: 18px;
+            font-family: 'Noto Serif TC', serif;
+            font-size: 6.5rem;
+            font-weight: 900;
+            color: #0f172a;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.04);
+            overflow: hidden;
+        }
+
+        /* Mizige grid overlay lines */
+        .hanzi-box::before, .hanzi-box::after {
+            content: '';
+            position: absolute;
+            background-color: transparent;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Vertical dashed line */
+        .hanzi-box::before {
+            top: 0; bottom: 0; left: 50%;
+            width: 0;
+            border-left: 2px dashed rgba(203, 213, 225, 0.55);
+        }
+
+        /* Horizontal dashed line */
+        .hanzi-box::after {
+            left: 0; right: 0; top: 50%;
+            height: 0;
+            border-top: 2px dashed rgba(203, 213, 225, 0.55);
+        }
+
+        .hanzi-char {
+            position: relative;
+            z-index: 5;
+            margin-top: -10px; /* Fine-tune vertical alignment for the font */
+        }
+
+        /* Vietnamese translation details */
+        .mean-title {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: #0f172a;
+            margin-bottom: 10px;
+            text-align: center;
+            letter-spacing: 0.5px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        .mean-badge {
+            background-color: #ccfbf1;
+            border: 1.5px solid #99f6e4;
+            color: #0f766e;
+            padding: 6px 22px;
+            border-radius: 24px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.02);
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Illustration container */
+        .image-container {
+            width: 380px;
+            height: 380px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: auto;
+            margin-bottom: 20px;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 15px 30px rgba(159, 18, 57, 0.08));
+        }
+
+        .watermark {
+            font-size: 1.2rem;
+            color: #9f1239;
+            opacity: 0.5;
+            font-weight: 800;
+            letter-spacing: 3px;
+            font-family: 'Arial', sans-serif;
+            text-transform: lowercase;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="canvas">
+        <div class="header-container">
+            <h1 class="header-title">Trật tự từ rất quan trọng</h1>
+        </div>
+
+        <div class="watermark-container">
+            <span class="watermark">lelehoctiengtrung</span>
+        </div>
+
+        <div class="main-content">
+            <!-- Left Side Word -->
+            <div class="column">
+                <div class="pinyin-container">
+                    <!-- PINYIN_A_PLACEHOLDER -->
+                </div>
+
+                <div class="hanzi-container">
+                    <!-- HANZI_A_PLACEHOLDER -->
+                </div>
+
+                <!-- MEANING_A_PLACEHOLDER -->
+                <div class="mean-title">Sữa</div>
+                <div class="mean-badge">Đồ uống</div>
+
+                <!-- IMAGE_A_PLACEHOLDER -->
+                <div class="image-container">
+                    <img src="cropped_transparent_A.png" alt="Illustration A">
+                </div>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Right Side Word -->
+            <div class="column">
+                <div class="pinyin-container">
+                    <!-- PINYIN_B_PLACEHOLDER -->
+                </div>
+
+                <div class="hanzi-container">
+                    <!-- HANZI_B_PLACEHOLDER -->
+                </div>
+
+                <!-- MEANING_B_PLACEHOLDER -->
+                <div class="mean-title">Bò sữa</div>
+                <div class="mean-badge">Động vật</div>
+
+                <!-- IMAGE_B_PLACEHOLDER -->
+                <div class="image-container">
+                    <img src="cropped_transparent_B.png" alt="Illustration B">
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer watermark removed -->
+    </div>
+
+</body>
+</html>

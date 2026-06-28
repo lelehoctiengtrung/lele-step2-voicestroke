@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Câu chuyện Hán tự - Reel Template</title>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;500;700;900&family=Outfit:wght@400;600;800&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        /* Reset & Base */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background-color: #050811; font-family: 'Outfit', sans-serif;
+            color: #2c251f;
+        }
+
+        /* Container 9:16 Ratio - Chinese Scroll Style */
+        .reel-container {
+            position: relative;
+            width: 540px;
+            height: 960px; /* Exact 9:16 for 1080p/4K support (scale factor 2) */
+            background: #ebdca5; /* Deep, rich ancient parchment paper background */
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.4), 0 0 0 8px #4a3728; /* Wooden outer frame style */
+        }
+
+        /* Content Wrapper */
+        .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 400px;
+            height: 711.11px;
+            transform: scale(1.35);
+            transform-origin: top left;
+            z-index: 10;
+            display: flex; flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        /* Traditional Manuscript Grid Lines */
+        .reel-container::before {
+            content: ''; position: absolute; left: 20px; right: 20px; top: 0; bottom: 0;
+            border-left: 1px solid rgba(127, 29, 29, 0.12);
+            border-right: 1px solid rgba(127, 29, 29, 0.12);
+            pointer-events: none; z-index: 5;
+        }
+
+        /* Soft traditional ink wash or background sepia glows */
+        .bg-glow {
+            position: absolute; width: 350px; height: 350px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(127,29,29,0.06) 0%, rgba(127,29,29,0) 70%);
+            top: -100px; right: -100px; 
+            animation: float 7s ease-in-out infinite alternate;
+        }
+        .bg-glow-2 {
+            position: absolute; width: 450px; height: 450px; border-radius: 50%;
+            background: radial-gradient(circle, rgba(74,55,40,0.08) 0%, rgba(74,55,40,0) 70%);
+            bottom: -50px; left: -150px; 
+            animation: float 9s ease-in-out infinite alternate-reverse;
+        }
+
+        @keyframes float {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-40px, 60px) scale(1.1); }
+        }
+
+        /* Content Wrapper */
+        .content {
+            position: absolute; inset: 0; z-index: 10;
+            display: flex; flex-direction: column;
+            justify-content: flex-start;
+        }
+
+        /* Top Header */
+        .header { 
+            display: flex; justify-content: center; align-items: center; 
+            padding-top: 25px; 
+            animation: fadeDown 1s ease-out;
+            margin-bottom: 12px;
+            width: 100%;
+        }
+
+        .storyboard-controls {
+            display: none !important;
+        }
+        .scene-btn {
+            background: transparent;
+            border: none;
+            color: rgba(235, 220, 165, 0.6);
+            font-family: 'Outfit', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 700;
+            padding: 8px 16px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .scene-btn.active {
+            background: #7f1d1d;
+            color: #ebdca5;
+            box-shadow: 0 4px 12px rgba(127, 29, 29, 0.3);
+        }
+        .scene-btn:hover:not(.active) {
+            color: #ebdca5;
+            background: rgba(127, 29, 29, 0.1);
+        }
+        @keyframes flyInFromScreen {
+            0% { transform: scale(4) translateZ(100px); filter: blur(15px); opacity: 0; }
+            100% { transform: scale(1) translateZ(0); filter: blur(0); opacity: 1; }
+        }
+        @keyframes fadeLeft {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        
+        .char-box-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: flyInFromScreen 1.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+            gap: 6px;
+            flex-shrink: 0;
+        }
+        .char-brand-tag {
+            font-size: 0.65rem;
+            color: #7f1d1d;
+            opacity: 0.65;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-transform: lowercase;
+            font-family: 'Outfit', sans-serif;
+        }
+        .series-title {
+            background: rgba(127, 29, 29, 0.04);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(127, 29, 29, 0.18);
+            padding: 0 24px; border-radius: 30px;
+            color: #7f1d1d; font-weight: 700; letter-spacing: 2.5px; font-size: 0.85rem;
+            text-transform: uppercase; box-shadow: 0 4px 15px rgba(127,29,29,0.05);
+            display: flex;
+            align-items: center;
+            height: 42px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Character Split Layout (Side-by-Side) */
+        .character-split-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            padding: 0 25px;
+            margin-bottom: 5px;
+            animation: fadeDown 1s ease-out;
+            z-index: 10;
+        }
+
+        /* Left-aligned Calligraphy Box */
+        .animated-char-box {
+            width: 140px;
+            height: 140px;
+            flex-shrink: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            
+            /* Darker aged bamboo paper background */
+            background-color: #e5d5a7; 
+            border-radius: 16px;
+            box-shadow: inset 0 0 15px rgba(74, 55, 40, 0.15), 0 4px 12px rgba(74, 55, 40, 0.1);
+            position: relative;
+        }
+        /* Outer solid calligraphy box (remains stationary) */
+        .animated-char-box::before {
+            content: ''; position: absolute; inset: 0;
+            border: 2px solid rgba(127, 29, 29, 0.45);
+            border-radius: 16px;
+            pointer-events: none;
+            z-index: 1;
+        }
+        /* Inner guidelines (Horizontal, vertical, diagonal) */
+        .animated-char-box::after {
+            content: ''; position: absolute; inset: 0;
+            background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'><line x1='0' y1='50' x2='100' y2='50' stroke='%237f1d1d' stroke-opacity='0.25' stroke-dasharray='4,4'/><line x1='50' y1='0' x2='50' y2='100' stroke='%237f1d1d' stroke-opacity='0.25' stroke-dasharray='4,4'/><line x1='0' y1='0' x2='100' y2='100' stroke='%237f1d1d' stroke-opacity='0.25' stroke-dasharray='4,4'/><line x1='100' y1='0' x2='0' y2='100' stroke='%237f1d1d' stroke-opacity='0.25' stroke-dasharray='4,4'/></svg>");
+            background-size: 100% 100%;
+            border-radius: 16px;
+            overflow: hidden;
+            pointer-events: none;
+            z-index: 2;
+        }
+        .animated-char-box img,
+        .animated-char-box video,
+        .animated-char-box canvas,
+        .animated-char-box > *:not(.static-char-overlay) {
+            position: absolute !important;
+            width: 80% !important;
+            height: 80% !important;
+            left: 10% !important;
+            top: 10% !important;
+            right: auto !important;
+            bottom: auto !important;
+            object-fit: contain !important;
+            z-index: 10;
+            margin: 0 !important;
+            transform: none !important;
+        }
+
+        /* Right-aligned Components Deconstruction */
+        .components-deconstruction {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            flex: 1;
+            margin-left: 20px;
+        }
+        .component-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            white-space: nowrap;
+            opacity: 0;
+        }
+        .comp-char {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 1.15rem;
+            font-weight: 700;
+            color: #7f1d1d;
+            background: rgba(127, 29, 29, 0.05);
+            border: 1px dashed rgba(127, 29, 29, 0.25);
+            width: 28px;
+            height: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 6px;
+            flex-shrink: 0;
+        }
+        .comp-desc {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.75rem;
+            color: #4a3728;
+            line-height: 1.3;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+        .comp-desc strong {
+            color: #7f1d1d;
+            font-weight: 700;
+        }
+
+        /* Pinyin & Meaning Area */
+        .character-info {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 10px;
+            animation: fadeUp 1s ease-out 0.3s both;
+            z-index: 10;
+        }
+        .pinyin {
+            font-size: 1.8rem; color: #1c1917; font-weight: 800; letter-spacing: 4px;
+            margin-bottom: 2px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .meaning {
+            font-family: 'Arial', sans-serif;
+            font-size: 1.05rem; color: #4a3728; font-weight: 600; text-transform: uppercase; letter-spacing: 2px;
+        }
+
+        /* Evolution Timeline Styling */
+        .evolution-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 12px 25px 8px 25px;
+            animation: fadeUp 1s ease-out 0.5s both;
+            z-index: 10;
+        }
+        .evolution-title {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.75rem;
+            color: #7f1d1d;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            opacity: 0.85;
+        }
+        .evolution-steps {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            background: rgba(127, 29, 29, 0.03);
+            border: 1px dashed rgba(127, 29, 29, 0.15);
+            border-radius: 12px;
+            padding: 10px 8px;
+        }
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+        }
+        .step-icon {
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .step-char {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #7f1d1d;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .step-name {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.6rem;
+            color: #4a3728;
+            font-weight: 600;
+            margin-top: 4px;
+            text-align: center;
+        }
+        .step-arrow {
+            font-size: 0.8rem;
+            color: rgba(127, 29, 29, 0.4);
+            user-select: none;
+        }
+
+        /* Zoom-shrink Kinetic Evolution Animation */
+        @keyframes evolutionZoom {
+            0% {
+                transform: translate(var(--startX, 0px), var(--startY, 150px)) scale(3.6);
+                opacity: 0;
+                filter: blur(5px);
+                z-index: 999;
+            }
+            15% {
+                transform: translate(var(--startX, 0px), var(--startY, 150px)) scale(3.6);
+                opacity: 1;
+                filter: blur(0px);
+                z-index: 999;
+            }
+            50% {
+                transform: translate(var(--startX, 0px), var(--startY, 150px)) scale(3.6);
+                opacity: 1;
+                z-index: 999;
+            }
+            80% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+                z-index: 10;
+            }
+            100% {
+                transform: translate(0, 0) scale(1);
+                opacity: 1;
+                z-index: 10;
+            }
+        }
+        
+        .animate .step {
+            opacity: 0; /* Default invisible before animation starts */
+        }
+        
+        .animate .step:nth-child(1) {
+            --startX: 140px;
+            --startY: 150px;
+            animation: evolutionZoom 1.8s cubic-bezier(0.25, 1, 0.5, 1) 0.3s both;
+        }
+        .animate .step:nth-child(3) {
+            --startX: 47px;
+            --startY: 150px;
+            animation: evolutionZoom 1.8s cubic-bezier(0.25, 1, 0.5, 1) 2.0s both;
+        }
+        .animate .step:nth-child(5) {
+            --startX: -47px;
+            --startY: 150px;
+            animation: evolutionZoom 1.8s cubic-bezier(0.25, 1, 0.5, 1) 3.7s both;
+        }
+        .animate .step:nth-child(7) {
+            --startX: -140px;
+            --startY: 150px;
+            animation: evolutionZoom 1.8s cubic-bezier(0.25, 1, 0.5, 1) 5.4s both;
+        }
+
+        .animate .step-arrow {
+            opacity: 0;
+        }
+        .animate .step-arrow:nth-child(2) {
+            animation: arrowFadeIn 0.4s ease 1.9s both;
+        }
+        .animate .step-arrow:nth-child(4) {
+            animation: arrowFadeIn 0.4s ease 3.6s both;
+        }
+        .animate .step-arrow:nth-child(6) {
+            animation: arrowFadeIn 0.4s ease 5.3s both;
+        }
+        @keyframes arrowFadeIn {
+            from { opacity: 0; transform: scale(0.5); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        /* Dynamic Scene Panels */
+        .scene-panel {
+            display: none;
+            width: 100%;
+            opacity: 0;
+            transform: translateY(10px);
+            transition: all 0.4s ease;
+        }
+        .scene-panel.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: panelFadeIn 0.5s ease-out forwards;
+        }
+        @keyframes panelFadeIn {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Story/Explanation Area (Moved Up) */
+        .story-box {
+            padding: 5px 25px 5px 25px;
+            width: 100%;
+            z-index: 10;
+        }
+        .story-illustration-card {
+            width: 100%;
+            height: 350px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: none;
+            box-shadow: none;
+            margin-bottom: 0;
+            background: transparent;
+        }
+        .story-illustration-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(0 4px 8px rgba(74, 55, 40, 0.1));
+        }
+        .story-text {
+            font-family: 'Arial', sans-serif;
+            color: #2c251f; font-size: 0.85rem; line-height: 1.45;
+            border-left: 3px solid #7f1d1d;
+            padding-left: 12px;
+            animation: fadeUp 1s ease-out 0.4s both;
+        }
+        .highlight { color: #b91c1c; font-weight: 800; }
+
+        /* Examples Block Styling (New) */
+        .examples-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+            padding: 15px 25px;
+            z-index: 10;
+        }
+        .examples-title {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.75rem;
+            color: #7f1d1d;
+            font-weight: 700;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            opacity: 0.85;
+            width: 100%;
+            text-align: left;
+            border-bottom: 1px dashed rgba(127, 29, 29, 0.15);
+            padding-bottom: 5px;
+        }
+        .examples-list {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            width: 100%;
+        }
+        .example-item {
+            display: flex;
+            align-items: center;
+            background: rgba(127, 29, 29, 0.02);
+            border: 1px solid rgba(127, 29, 29, 0.08);
+            padding: 6px 12px;
+            border-radius: 8px;
+            width: 100%;
+            justify-content: flex-start;
+            gap: 10px;
+        }
+        .ex-hanzi {
+            font-family: 'Noto Serif TC', serif;
+            font-size: 1.05rem;
+            font-weight: 700;
+            color: #7f1d1d;
+            width: max-content;
+            flex-shrink: 0;
+        }
+        .ex-pinyin {
+            font-size: 0.8rem;
+            color: #1c1917;
+            font-weight: 700;
+            letter-spacing: 1px;
+            width: max-content;
+            flex-shrink: 0;
+        }
+        .ex-mean {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.8rem;
+            color: #4a3728;
+            font-weight: 500;
+            flex: 1;
+        }
+
+        /* Social UI Overlay */
+        .ui-sidebar {
+            position: absolute; right: 15px; bottom: 100px;
+            display: flex; flex-direction: column; gap: 20px; align-items: center; z-index: 20;
+        }
+        .ui-icon {
+            width: 45px; height: 45px; background: rgba(127, 29, 29, 0.08);
+            border-radius: 50%; display: flex; justify-content: center; align-items: center;
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            color: #7f1d1d; font-size: 1.2rem; border: 1px solid rgba(127, 29, 29, 0.15);
+            box-shadow: 0 4px 15px rgba(127,29,29,0.08);
+            transition: transform 0.2s;
+        }
+        .ui-icon:hover { transform: scale(1.1); background: rgba(127, 29, 29, 0.15); }
+
+        /* Generic Animations */
+        @keyframes fadeDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes highlightFlash {
+            0%, 100% { background-color: transparent; transform: scale(1); }
+            50% { background-color: rgba(239, 68, 68, 0.2); transform: scale(1.05); border-radius: 8px; box-shadow: 0 0 15px rgba(239, 68, 68, 0.4); }
+        }
+        .flash-active {
+            animation: highlightFlash 1.5s ease-in-out;
+            color: #b91c1c;
+            font-weight: bold;
+        }
+        /* Dynamic Video Subtitles */
+        .reel-subtitles {
+            display: none !important;
+            position: absolute;
+            bottom: 45px;
+            left: 5%;
+            width: 90%;
+            text-align: center;
+            font-family: 'Arial', sans-serif;
+            font-size: 0.95rem;
+            font-weight: 700;
+            color: #ffffff;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 8px rgba(127,29,29,0.4);
+            z-index: 500;
+            padding: 8px 12px;
+            background: rgba(5, 8, 17, 0.85);
+            border-radius: 12px;
+            border: 1px solid rgba(127, 29, 29, 0.25);
+            line-height: 1.4;
+            min-height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            pointer-events: none;
+        }
+        .reel-subtitles.active {
+            opacity: 1;
+        }
+        .subtitle-highlight {
+            color: #ebdca5;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.9), 0 0 10px rgba(239, 68, 68, 0.6);
+        }
+
+        /* First Frame Cover Override Rules */
+        .first-frame-cover .header {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+        .first-frame-cover .char-box-wrapper {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+            filter: none !important;
+        }
+        .first-frame-cover .character-split-container {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+        .first-frame-cover #character-info-block {
+            opacity: 1 !important;
+            transition: none !important;
+        }
+        .first-frame-cover .component-item {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+        }
+        .first-frame-cover #illustration-card {
+            opacity: 1 !important;
+            transition: none !important;
+        }
+        .first-frame-cover #examples-block {
+            opacity: 1 !important;
+            transition: none !important;
+        }
+        .first-frame-cover #subtitles-box {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="reel-container" id="stage" data-composition-id="main" data-start="0" data-duration="40" data-width="540" data-height="960">
+        <!-- Abstract Background Effects -->
+        <div class="bg-glow"></div>
+        <div class="bg-glow-2"></div>
+        
+        <div class="content">
+            <!-- Top Series Tag with Personal Brand Title -->
+            <div class="header">
+                <div class="series-title">LÊ LÊ KỂ CHỮ</div>
+            </div>
+            
+            <!-- Side-by-Side Layout: Character on Left, Radicals on Right -->
+            <div class="character-split-container">
+                <!-- Left Column: Animated Calligraphy Grid Box with Brand Signature -->
+                <div class="char-box-wrapper">
+                    <div class="animated-char-box">
+                        <img src="03_Assets/animated character/龙-transparent.gif" alt="Animated Character">
+                        <!-- CHARACTER_OVERLAY_START -->
+                        <div class="static-char-overlay" style="display: none; position: absolute; inset: 0; justify-content: center; align-items: center; font-family: 'Noto Serif TC', serif; font-size: 85px; color: #7f1d1d; z-index: 15;">龙</div>
+                        <!-- CHARACTER_OVERLAY_END -->
+                    </div>
+                    <div class="char-brand-tag">lelehoctiengtrung</div>
+                </div>
+
+                <!-- Right Column: Component Deconstruction with Vietnamese meanings -->
+                <!-- COMPONENTS_START -->
+                <div class="components-deconstruction">
+                    <div class="component-item" style="animation: fadeLeft 0.5s ease-out 0.8s forwards;">
+                        <span class="comp-char">丿</span>
+                        <span class="comp-desc"><strong>Phẩy:</strong> Đầu rồng</span>
+                    </div>
+                    <div class="component-item" style="animation: fadeLeft 0.5s ease-out 1.3s forwards;">
+                        <span class="comp-char">乚</span>
+                        <span class="comp-desc"><strong>Móc:</strong> Đuôi rồng</span>
+                    </div>
+                </div>
+                <!-- COMPONENTS_END -->
+            </div>
+
+            <!-- Pinyin and Vietnamese Meaning (Directly below character split) -->
+            <div id="character-info-block" class="character-info" style="display: flex; align-items: baseline; justify-content: center; gap: 10px; margin-top: 5px; margin-bottom: 5px; flex-direction: row; opacity: 0; transition: opacity 0.5s ease;">
+                <div class="pinyin" style="font-size: 1.5rem; margin: 0;">lóng</div>
+                <div class="meaning" style="font-size: 1.2rem; margin: 0; color: #7f1d1d;">- Con rồng</div>
+            </div>
+
+            <!-- SCENE 1: FOCUS TRÊN CHỮ VÀ HÌNH MINH HỌA -->
+            <div id="scene-1" class="scene-panel active">
+                <div class="story-box" style="padding: 0 5px;">
+                    <div id="illustration-card" class="story-illustration-card" style="height: 310px; margin-top: 0; opacity: 0; transition: opacity 1s ease;">
+                        <img src="03_Assets/illustration/dragon_illustration_trans.png" alt="Rồng bay" style="object-fit: contain; mix-blend-mode: multiply;">
+                    </div>
+                    <!-- Ví dụ ở dưới hình ảnh -->
+                    <!-- EXAMPLES_START -->
+                    <div id="examples-block" class="examples-container" style="padding: 2px 25px; margin-top: 2px; opacity: 0; transition: opacity 1s ease;">
+                        <div class="examples-title" style="font-size: 0.7rem; margin-bottom: 2px;">Ví dụ:</div>
+                        <div class="examples-list" style="gap: 4px; display: flex; flex-direction: column; width: 100%;">
+                            <div id="ex-feilong" class="example-item" style="padding: 4px 8px; font-size: 0.75rem; transition: all 0.3s ease;">
+                                <span class="ex-hanzi">飞龙</span>
+                                <span class="ex-pinyin">fēilóng</span>
+                                <span class="ex-mean">Rồng bay (Danh từ)</span>
+                            </div>
+                            <div id="ex-longzhou" class="example-item" style="padding: 4px 8px; font-size: 0.75rem; transition: all 0.3s ease;">
+                                <span class="ex-hanzi">龙舟</span>
+                                <span class="ex-pinyin">lóngzhōu</span>
+                                <span class="ex-mean">Thuyền rồng (Danh từ)</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- EXAMPLES_END -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Mock TikTok/Reel UI Overlays (REMOVED) -->
+        
+        <!-- Dynamic Subtitles Overlay -->
+        <div id="subtitles-box" class="reel-subtitles">Ài...</div>
+
+        <!-- Audio Tracks Timeline for Hyperframes -->
+        <div style="display: none;">
+            <audio id="audio-0" data-start="0.0" src="audio/vi_part1.wav"></audio>
+            <audio id="audio-1" data-start="3.9" src="audio/zh_long.mp3"></audio>
+            <audio id="audio-2" data-start="5.0" src="audio/vi_part2.wav"></audio>
+            <audio id="audio-3" data-start="25.1" src="audio/vi_vidu.wav"></audio>
+            <audio id="audio-4" data-start="27.0" src="audio/zh_feilong.mp3"></audio>
+            <audio id="audio-5" data-start="28.5" src="audio/vi_part3.wav"></audio>
+            <audio id="audio-6" data-start="30.8" src="audio/zh_longzhou.mp3"></audio>
+            <audio id="audio-7" data-start="32.1" src="audio/vi_part4.wav"></audio>
+        </div>
+    </div>
+
+    <!-- Script for switching scenes dynamically -->
+    <script>
+        let autoPlayInterval = null;
+        let autoPlayTime = 0; // in seconds
+        const autoPlayTotalDuration = 40; // 24s total
+        
+        const subtitleData = [
+            { start: 0.0, end: 2.0, text: "Hôm nay Lê Lê kể chữ Tá nhé." },
+            { start: 2.0, end: 4.0, text: "Chữ Tá, đọc là <b>借 (jiè)</b>, nghĩa là vay mượn." },
+            { start: 4.0, end: 7.0, text: "Chữ được ghép từ <span class='subtitle-highlight'>bộ Nhân</span> chỉ con người..." },
+            { start: 7.0, end: 9.0, text: "...và <span class='subtitle-highlight'>chữ Tích</span> chỉ ngày xưa." },
+            { start: 9.0, end: 14.0, text: "Cổ nhân dạy, đi mượn đồ thì phải nhớ ân tình ngày xưa mà trả." },
+            { start: 14.0, end: 20.0, text: "Nhưng Gia Cát Lượng lại dùng người cỏ mượn 10 vạn mũi tên của Tào Tháo..." },
+            { start: 20.0, end: 23.0, text: "...và mượn cả gió Đông để hỏa thiêu Xích Bích." },
+            { start: 23.0, end: 27.0, text: "Mượn mà không phải trả, đó là mưu trí mượn sức địch để đánh địch." },
+            { start: 27.0, end: 29.0, text: "Ví dụ như: <b>借口 (jièkǒu)</b>" },
+            { start: 29.0, end: 32.0, text: "Nghĩa là cái cớ, viện cớ." },
+            { start: 32.0, end: 34.0, text: "Và <b>借用 (jièyòng)</b>" },
+            { start: 34.0, end: 36.0, text: "Nghĩa là mượn dùng." }
+        ];
+
+        // Initialize and register GSAP Master Timeline for Hyperframes determinism
+        const mainTimeline = gsap.timeline({ paused: true });
+        
+        // Add a dummy tween of the total duration (44 seconds) to make the timeline's duration exactly 44 seconds!
+        mainTimeline.to({}, { 
+            duration: 40,
+            onUpdate: function() {
+                const currentTime = this.time();
+                setSimulationTime(currentTime);
+            }
+        });
+        
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = mainTimeline;
+
+        function switchScene(num) {
+            // Update active button states
+            document.querySelectorAll('.scene-btn').forEach((btn) => {
+                if (btn.id === 'btn-scene-' + num) {
+                    btn.classList.add('active');
+                } else if (btn.id !== 'btn-autoplay') {
+                    btn.classList.remove('active');
+                }
+            });
+
+            // Hide all scene panels with fade-out
+            document.querySelectorAll('.scene-panel').forEach(panel => {
+                panel.classList.remove('active');
+            });
+
+            // Show active scene panel with smooth entry
+            const activePanel = document.getElementById('scene-' + num);
+            if (activePanel) {
+                activePanel.classList.add('active');
+            }
+        }
+
+        let currentActiveScene = null;
+
+        function setSimulationTime(time) {
+            // Update progress bar width
+            const percent = (time / autoPlayTotalDuration) * 100;
+            const progress = document.getElementById('autoplay-progress');
+            if (progress) progress.style.width = percent + "%";
+            
+            const stage = document.getElementById('stage');
+            const staticOverlay = document.querySelector('.static-char-overlay');
+            const gifImg = document.querySelector('.animated-char-box img');
+            
+            if (time === 0) {
+                stage.classList.add('first-frame-cover');
+                if (staticOverlay) staticOverlay.style.display = 'flex';
+                if (gifImg) gifImg.style.display = 'none';
+                switchScene(1);
+                updateSubtitles(0);
+                return;
+            } else {
+                stage.classList.remove('first-frame-cover');
+                if (staticOverlay) staticOverlay.style.display = 'none';
+                if (gifImg) gifImg.style.display = '';
+            }
+            
+            // Determine active scene based on time
+            let sceneNum = 1;
+            if (time >= 3.9 && time < 4.9) {
+                document.querySelector('.pinyin').classList.add('flash-active');
+            } else {
+                document.querySelector('.pinyin').classList.remove('flash-active');
+            }
+            
+            // Generic example flashing based on audioTimings
+            if (typeof audioTimings !== 'undefined') {
+                audioTimings.forEach((t) => {
+                    if (t.id.startsWith('zh_')) {
+                        const idx = t.id.split('_')[1];
+                        const el = document.getElementById('ex-' + idx);
+                        if (el) {
+                            if (time >= t.start && time < t.end) {
+                                el.classList.add('flash-active');
+                            } else {
+                                el.classList.remove('flash-active');
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Persistent UI Elements
+            if (time >= 3.9) {
+                document.getElementById('character-info-block').style.opacity = '1';
+                document.getElementById('illustration-card').style.opacity = '1';
+            } else {
+                document.getElementById('character-info-block').style.opacity = '0';
+                document.getElementById('illustration-card').style.opacity = '0';
+            }
+            
+            if (time >= 25.1) {
+                document.getElementById('examples-block').style.opacity = '1';
+            } else {
+                document.getElementById('examples-block').style.opacity = '0';
+            }
+            if (sceneNum !== currentActiveScene) {
+                currentActiveScene = sceneNum;
+                switchScene(sceneNum);
+            }
+            
+            // Update subtitles
+            updateSubtitles(time);
+        }
+
+        function toggleAutoPlay() {
+            const btn = document.getElementById('btn-autoplay');
+            const progressContainer = document.getElementById('autoplay-progress-container');
+            const subBox = document.getElementById('subtitles-box');
+            
+            if (autoPlayInterval) {
+                // Stop Auto Play
+                clearInterval(autoPlayInterval);
+                autoPlayInterval = null;
+                btn.innerHTML = "▶️ Chạy tự động";
+                btn.style.background = "#b91c1c";
+                btn.style.color = "#ebdca5";
+                progressContainer.style.display = "none";
+                subBox.classList.remove('active');
+                
+                // Pause and reset all audio tracks
+                document.querySelectorAll('audio').forEach(audio => {
+                    audio.pause();
+                    audio.currentTime = 0;
+                });
+            } else {
+                // Start Auto Play
+                autoPlayTime = 0;
+                btn.innerHTML = "⏹️ Dừng phát";
+                btn.style.background = "#1e293b";
+                btn.style.color = "#ef4444";
+                progressContainer.style.display = "block";
+                subBox.classList.add('active');
+                
+                setSimulationTime(0);
+                
+                autoPlayInterval = setInterval(() => {
+                    autoPlayTime += 0.1;
+                    
+                    // Update state simulation deterministically
+                    setSimulationTime(autoPlayTime);
+                    
+                    // Control audio tracks playback (standard browser preview only)
+                    document.querySelectorAll('audio').forEach(audio => {
+                        const start = parseFloat(audio.getAttribute('data-start'));
+                        const duration = parseFloat(audio.getAttribute('data-duration'));
+                        
+                        if (autoPlayTime >= start && autoPlayTime < start + duration) {
+                            if (audio.paused) {
+                                audio.play().catch(() => {});
+                            }
+                        } else {
+                            if (!audio.paused) {
+                                audio.pause();
+                            }
+                        }
+                    });
+                    
+                    // Check end of duration
+                    if (autoPlayTime >= autoPlayTotalDuration) {
+                        toggleAutoPlay();
+                    }
+                }, 100);
+            }
+        }
+
+        function updateSubtitles(time) {
+            const subBox = document.getElementById('subtitles-box');
+            const activeSub = subtitleData.find(sub => time >= sub.start && time < sub.end);
+            
+            if (activeSub) {
+                if (subBox.innerHTML !== activeSub.text) {
+                    subBox.innerHTML = activeSub.text;
+                    subBox.classList.add('active');
+                }
+            } else {
+                subBox.classList.remove('active');
+            }
+        }
+
+        // HeyGen Hyperframes seek integration (runs frame-by-frame during rendering)
+        window.addEventListener("hf-seek", (e) => {
+            const seekTime = e.detail.time;
+            setSimulationTime(seekTime);
+        });
+
+        // Initialize and lock Scene 1 on load
+        window.addEventListener('DOMContentLoaded', () => {
+            setSimulationTime(0);
+        });
+    </script>
+
+    <!-- Floating Storyboard Controls for Simulator (Placed at bottom for Hyperframes root tag compliance) -->
+    <div class="storyboard-controls" style="display: flex; flex-direction: column; gap: 8px; align-items: center; padding: 10px 18px;">
+        <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: center;">
+            <button class="scene-btn active" id="btn-scene-1" onclick="switchScene(1)">🎬 Cảnh 1: Chiết tự & Tiến hóa</button>
+            <button class="scene-btn" id="btn-scene-2" onclick="switchScene(2)">🎬 Cảnh 2: Giai thoại dưới mưa</button>
+            <button class="scene-btn" id="btn-scene-3" onclick="switchScene(3)">🎬 Cảnh 3: Ví dụ</button>
+            <button class="scene-btn" id="btn-autoplay" onclick="toggleAutoPlay()" style="background: #b91c1c; color: #ebdca5; border: 1px solid rgba(235, 220, 165, 0.4); box-shadow: 0 4px 12px rgba(185, 28, 28, 0.35);">▶️ Chạy tự động</button>
+        </div>
+        <div id="autoplay-progress-container" style="width: 100%; height: 5px; background: rgba(255,255,255,0.1); border-radius: 4px; overflow: hidden; display: none; margin-top: 2px; border: 1px solid rgba(127,29,29,0.2);">
+            <div id="autoplay-progress" style="width: 0%; height: 100%; background: linear-gradient(90deg, #b91c1c, #ef4444); transition: width 0.1s linear;"></div>
+        </div>
+    </div>
+
+</body>
+</html>

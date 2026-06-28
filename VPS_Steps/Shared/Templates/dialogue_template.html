@@ -1,0 +1,566 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tiếng Trung Thực Chiến - Reel Template</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            display: flex; justify-content: center; align-items: center;
+            min-height: 100vh; background-color: #f3f4f6; font-family: 'Arial', sans-serif;
+            color: #1f2937;
+        }
+
+        .reel-container {
+            position: relative;
+            width: 540px;
+            height: 960px;
+            /* Premium clean white template background */
+            background-color: #ffffff;
+            background-image: 
+                radial-gradient(circle at 10% 15%, rgba(0, 122, 255, 0.04) 0%, transparent 65%),
+                radial-gradient(circle at 90% 45%, rgba(0, 122, 255, 0.02) 0%, transparent 65%),
+                linear-gradient(180deg, #ffffff 0%, #f7f7f9 100%);
+            border-radius: 24px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.05), 0 0 0 8px #ffffff;
+        }
+
+        /* Premium noise overlay to blend colors and add texture */
+        .reel-container::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            opacity: 0.015;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .content {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 400px;
+            height: 711.11px;
+            transform: scale(1.35);
+            transform-origin: top left;
+            z-index: 10;
+            display: flex; 
+            flex-direction: column;
+            justify-content: flex-start;
+            padding: 24px 20px 24px 20px;
+        }
+
+        .header {
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 0;
+            width: 100%;
+        }
+
+        .series-title {
+            background: rgba(0, 122, 255, 0.04);
+            backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(0, 122, 255, 0.22);
+            padding: 0 24px; border-radius: 30px;
+            color: #007aff; font-weight: 700; letter-spacing: 2.5px; font-size: 0.85rem;
+            text-transform: uppercase; box-shadow: 0 4px 15px rgba(0, 122, 255, 0.05);
+            display: flex;
+            align-items: center;
+            height: 42px;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Brand watermark, centered evenly between title and chat window */
+        .brand-tag {
+            font-size: 0.6rem;
+            color: #007aff;
+            opacity: 0.55;
+            font-weight: 700;
+            letter-spacing: 1.5px;
+            text-align: center;
+            margin-top: 14px;
+            margin-bottom: 14px;
+            width: 100%;
+            font-family: 'Arial', sans-serif;
+        }
+
+        /* Premium Ivory Chat Window with thin Blue Border (2px) */
+        .chat-window {
+            position: relative; /* Position relative for absolute illustration */
+            background: #fafaf5; /* Ivory / Ngà color */
+            border: 2px solid #007aff; /* Thin blue border (same as title) */
+            border-radius: 16px;
+            width: 100%;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 25px rgba(0, 122, 255, 0.05);
+        }
+
+        .chat-illustration {
+            position: absolute;
+            inset: 0;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            z-index: 2; /* Sit on top of chat bubbles initially */
+            opacity: 1;
+            pointer-events: none;
+        }
+
+        /* Chat bubbles space - Ivory Light Background */
+        .chat-feed {
+            flex: 1;
+            background: #fafaf5;
+            padding: 16px 14px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            overflow: hidden;
+        }
+
+        /* Chat rows containing avatar and bubble */
+        .chat-row {
+            display: flex;
+            align-items: flex-end;
+            gap: 8px;
+            width: 100%;
+            opacity: 0;
+            max-height: 0;
+            margin-top: 0;
+            margin-bottom: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .chat-row.active-bubble {
+            opacity: 1;
+            max-height: 200px;
+            margin-top: 6px;
+            margin-bottom: 6px;
+        }
+
+        .chat-row.speaker-a {
+            justify-content: flex-start;
+        }
+
+        .chat-row.speaker-b {
+            justify-content: flex-end;
+        }
+
+        .bubble-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            border: 1.5px solid rgba(0, 122, 255, 0.15);
+            flex-shrink: 0;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+            background-color: #e5e5ea;
+            transition: all 0.3s ease;
+        }
+
+        /* Speaking animation removed to keep avatar static */
+
+        /* Chat bubble - iMessage Bubble Style */
+        .chat-bubble {
+            max-width: 76%;
+            padding: 10px 14px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            position: relative;
+        }
+
+        /* Speaker A: Left aligned, light gray bubble */
+        .chat-bubble.speaker-a {
+            background-color: #e5e5ea;
+            color: #000000;
+            border-radius: 14px 14px 14px 4px;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .chat-bubble.speaker-a::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            left: -6px;
+            width: 14px;
+            height: 12px;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='14' height='12' viewBox='0 0 14 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M14 0 L14 12 C10.5 12 0 12 0 12 C7 10.5 10.5 6 10.5 0 Z' fill='%23e5e5ea'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Speaker B: Right aligned, iMessage Blue bubble */
+        .chat-bubble.speaker-b {
+            background-color: #007aff;
+            color: #ffffff;
+            border-radius: 14px 14px 4px 14px;
+            box-shadow: 0 2px 4px rgba(0, 122, 255, 0.15);
+        }
+        
+        .chat-bubble.speaker-b::before {
+            content: "";
+            position: absolute;
+            bottom: 0;
+            right: -6px;
+            width: 14px;
+            height: 12px;
+            background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg width='14' height='12' viewBox='0 0 14 12' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0 L0 12 C3.5 12 14 12 14 12 C7 10.5 3.5 6 3.5 0 Z' fill='%23007aff'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            z-index: 1;
+            pointer-events: none;
+        }
+
+        /* Centered System Message/Vocabulary Card */
+        .chat-row.system-msg {
+            justify-content: center;
+        }
+        
+        .chat-bubble.system-bubble {
+            background: rgba(0, 122, 255, 0.04);
+            border: 1.5px solid rgba(0, 122, 255, 0.15);
+            border-radius: 14px;
+            color: #1c1c1e;
+            text-align: center;
+            max-width: 90%;
+            padding: 10px 16px;
+        }
+        
+        .chat-bubble.system-bubble::before {
+            display: none !important;
+        }
+
+        .bubble-zh {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.95rem;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+        }
+
+        .bubble-py {
+            font-family: 'Arial', sans-serif;
+            font-size: 0.72rem;
+            letter-spacing: 2px;
+            font-weight: normal;
+        }
+
+        .chat-bubble.speaker-a .bubble-py {
+            color: #d97706; /* Darker amber accent color for pinyin on light grey */
+        }
+
+        .chat-bubble.speaker-b .bubble-py {
+            color: #fbbf24; /* Gold accent color for pinyin on blue background */
+        }
+
+        /* Subtitle position, 5px gap below chat window in flex flow */
+        .reel-subtitles {
+            width: 100%;
+            min-height: 75px;
+            margin-top: 5px;
+            background: #fafaf5; /* Ivory / Ngà background */
+            border-radius: 12px;
+            border: 2px solid #007aff; /* Thin blue border (same as chat-window/title) */
+            padding: 12px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 15px rgba(0, 122, 255, 0.05);
+            font-family: 'Arial', sans-serif;
+            font-size: 0.95rem;
+            font-weight: normal;
+            color: #1c1c1e; /* Dark iOS style text */
+            line-height: 1.4;
+            letter-spacing: 0.5px;
+            text-align: center;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+            pointer-events: none;
+        }
+
+        .reel-subtitles.active {
+            opacity: 1;
+        }
+
+        /* Vocabulary Board Styling */
+        .vocab-board {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            padding: 24px 20px;
+            background: #fafaf5;
+            z-index: 5;
+            position: absolute;
+            inset: 0;
+            overflow: hidden;
+            animation: fadeIn 0.4s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.98); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .vocab-title {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #007aff;
+            margin-bottom: 24px;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+            text-shadow: 0 2px 4px rgba(0, 122, 255, 0.05);
+            font-family: 'Arial', sans-serif;
+            border-bottom: 2px solid rgba(0, 122, 255, 0.15);
+            padding-bottom: 6px;
+            width: fit-content;
+            text-align: center;
+        }
+
+        .vocab-list {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .vocab-item {
+            background: #ffffff;
+            border: 1.5px solid rgba(0, 122, 255, 0.08);
+            border-radius: 14px;
+            padding: 12px 18px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.015);
+            opacity: 0;
+            transform: translateY(15px);
+            transition: border-color 0.15s ease, background 0.15s ease, box-shadow 0.15s ease;
+            width: 100%;
+        }
+
+        .vocab-item.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .vocab-item.speaking {
+            border-color: #007aff;
+            background: rgba(0, 122, 255, 0.03);
+            box-shadow: 0 6px 15px rgba(0, 122, 255, 0.08);
+            transform: scale(1.02);
+        }
+
+        .vocab-left {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            align-items: flex-start;
+        }
+
+        .vocab-zh {
+            font-size: 1.1rem;
+            font-weight: bold;
+            color: #1c1c1e;
+            letter-spacing: 0.5px;
+        }
+
+        .vocab-py {
+            font-size: 0.72rem;
+            color: #d97706;
+            letter-spacing: 1.5px;
+            font-weight: normal;
+        }
+
+        .vocab-vi {
+            font-size: 0.85rem;
+            color: #48484a;
+            font-weight: 600;
+            text-align: right;
+            max-width: 55%;
+        }
+
+        /* When vocab is active, hide chat bubbles/illustration and show vocab board */
+        .chat-window.vocab-active .chat-feed {
+            display: none !important;
+        }
+        .chat-window.vocab-active .chat-illustration {
+            display: none !important;
+        }
+        .chat-window.vocab-active .vocab-board {
+            display: flex !important;
+        }
+
+        .storyboard-controls { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="reel-container" id="stage" data-composition-id="main" data-start="0" data-duration="40" data-width="540" data-height="960">
+        <div class="content">
+            <div class="header">
+                <div class="series-title">Tiếng Trung Thực Chiến</div>
+            </div>
+
+            <!-- Watermark text centered between title and chat card -->
+            <div class="brand-tag">lelehoctiengtrung</div>
+
+            <!-- Phone Chat interface - Premium Ivory Card -->
+            <div class="chat-window">
+                <div id="chat-illustration" class="chat-illustration" style="background-image: url('cropped_transparent.png')"></div>
+                <div class="chat-feed" id="chat-feed-box">
+                    <!-- CHAT_BUBBLES_START -->
+                    <div id="bubble-0" class="chat-row speaker-a">
+                        <div class="bubble-avatar" style="background-image: url('avatar_female.png')"></div>
+                        <div class="chat-bubble speaker-a">
+                            <span class="bubble-zh">老板，珍珠奶茶多少钱一杯？</span>
+                            <span class="bubble-py">Lǎobān, zhēnzhū nǎichá duōshǎo qián yī bēi?</span>
+                        </div>
+                    </div>
+                    <div id="bubble-1" class="chat-row speaker-b">
+                        <div class="chat-bubble speaker-b">
+                            <span class="bubble-zh">大杯十五块，小杯十二块。</span>
+                            <span class="bubble-py">Dà bēi shíwǔ kuài, xiǎo bēi shí'è kuài.</span>
+                        </div>
+                        <div class="bubble-avatar" style="background-image: url('avatar_male.png')"></div>
+                    </div>
+                    <div id="bubble-2" class="chat-row speaker-a">
+                        <div class="bubble-avatar" style="background-image: url('avatar_female.png')"></div>
+                        <div class="chat-bubble speaker-a">
+                            <span class="bubble-zh">给我一杯大杯的，半糖去冰。</span>
+                            <span class="bubble-py">Gěi wǒ yī bēi dà bēi de, bàn táng qù bīng.</span>
+                        </div>
+                    </div>
+                    <div id="bubble-3" class="chat-row speaker-b">
+                        <div class="chat-bubble speaker-b">
+                            <span class="bubble-zh">好的，稍等一下。</span>
+                            <span class="bubble-py">Hǎo de, shāo děng yīxià.</span>
+                        </div>
+                        <div class="bubble-avatar" style="background-image: url('avatar_male.png')"></div>
+                    </div>
+                    <!-- CHAT_BUBBLES_END -->
+                </div>
+                <!-- VOCAB_BOARD_START -->
+                <!-- VOCAB_BOARD_END -->
+            </div>
+
+            <!-- Subtitle/Translation box in the flex flow -->
+            <div id="subtitles-box" class="reel-subtitles"></div>
+        </div>
+
+        <!-- Audio list is dynamic and will be injected here -->
+        <div style="display: none;">
+            <!-- AUDIO_PLACEHOLDER -->
+        </div>
+    </div>
+
+    <script>
+        const autoPlayTotalDuration = 40;
+        const mainTimeline = gsap.timeline({ paused: true });
+        
+        mainTimeline.to({}, { 
+            duration: autoPlayTotalDuration,
+            onUpdate: function() {
+                const currentTime = this.time();
+                setSimulationTime(currentTime);
+            }
+        });
+        
+        window.__timelines = window.__timelines || {};
+        window.__timelines["main"] = mainTimeline;
+
+        const subtitleData = [];
+        let lastActiveId = null;
+        // FIRST_DIALOGUE_START_PLACEHOLDER
+
+        function setSimulationTime(time) {
+            // First frame cover support (hide bubbles, update subtitles to show topic cover)
+            if (time === 0) {
+                document.querySelectorAll('.chat-row').forEach(b => {
+                    b.classList.remove('active-bubble');
+                    b.classList.remove('speaking');
+                });
+                const illBox = document.getElementById('chat-illustration');
+                if (illBox) {
+                    illBox.style.opacity = '1';
+                }
+                updateSubtitles(0);
+                return;
+            }
+
+            const illBox = document.getElementById('chat-illustration');
+            if (illBox) {
+                if (time < firstDialogueStart) {
+                    illBox.style.display = 'block';
+                    illBox.style.opacity = '1';
+                } else {
+                    illBox.style.display = 'none';
+                    illBox.style.opacity = '0';
+                }
+            }
+
+            // Timeline display controls for chat bubbles
+            // BUBBLE_TIMINGS_PLACEHOLDER
+
+            // Auto scroll to last active bubble
+            const activeBubbles = document.querySelectorAll('.chat-row.active-bubble');
+            if (activeBubbles.length > 0) {
+                const lastActive = activeBubbles[activeBubbles.length - 1];
+                if (lastActive.id !== lastActiveId) {
+                    lastActiveId = lastActive.id;
+                    const feed = document.getElementById('chat-feed-box');
+                    feed.scrollTop = feed.scrollHeight;
+                }
+            } else {
+                lastActiveId = null;
+            }
+
+            updateSubtitles(time);
+        }
+
+        function updateSubtitles(time) {
+            const subBox = document.getElementById('subtitles-box');
+            const activeSub = subtitleData.find(sub => time >= sub.start && time < sub.end);
+            
+            if (activeSub) {
+                if (subBox.innerHTML !== activeSub.text) {
+                    subBox.innerHTML = activeSub.text;
+                    subBox.classList.add('active');
+                }
+            } else {
+                subBox.classList.remove('active');
+            }
+        }
+
+        window.addEventListener("hf-seek", (e) => {
+            setSimulationTime(e.detail.time);
+        });
+
+        // Hide illustration if image is missing or failed to load
+        const illBox = document.getElementById('chat-illustration');
+        if (illBox) {
+            const img = new Image();
+            img.src = 'cropped_transparent.png';
+            img.onerror = function() {
+                illBox.style.display = 'none';
+            };
+        }
+    </script>
+</body>
+</html>
