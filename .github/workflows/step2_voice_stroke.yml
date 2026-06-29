@@ -23,7 +23,7 @@ jobs:
 
       - name: Execute Kaggle Kernel
         env:
-          KAGGLE_USERNAME: letruong2704
-          KAGGLE_KEY: 7013edc3b6c86af875aed05f9f89e150
+          KAGGLE_USERNAME: fredericcomic1
+          KAGGLE_KEY: c610ba8f8241f548e9e10d94bd41bf47
         run: |
           python Kaggle_Steps/run_step2_kaggle.py

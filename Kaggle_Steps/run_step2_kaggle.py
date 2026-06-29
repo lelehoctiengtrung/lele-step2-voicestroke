@@ -76,7 +76,7 @@ def run_kaggle_kernel():
             elif "error" in output_lower:
                 print("❌ Kaggle kernel execution failed! Fetching logs...")
                 subprocess.run(["kaggle", "kernels", "output", kernel_slug, "-p", "kaggle_output"])
-                raise RuntimeError("Kaggle kernel run failed.")
+                raise SystemExit("Kaggle kernel run failed.")
         except Exception as e:
             print(f"Warning during status check: {e}")
             
