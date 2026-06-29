@@ -46,10 +46,11 @@ def run_kaggle_kernel():
             output = status_res.stdout.strip()
             print(f"Status check: {output}")
             
-            if "has status 'complete'" in output or "'complete'" in output:
+            output_lower = output.lower()
+            if "complete" in output_lower:
                 print("🎉 Kaggle kernel execution completed successfully!")
                 return True
-            elif "has status 'error'" in output or "'error'" in output:
+            elif "error" in output_lower:
                 print("❌ Kaggle kernel execution failed! Fetching logs...")
                 subprocess.run(["kaggle", "kernels", "output", kernel_slug, "-p", "kaggle_output"])
                 raise RuntimeError("Kaggle kernel run failed.")
