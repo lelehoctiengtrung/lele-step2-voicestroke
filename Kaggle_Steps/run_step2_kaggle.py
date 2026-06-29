@@ -24,6 +24,18 @@ def run_kaggle_kernel():
     os.chmod(kaggle_json_path, 0o600)
     print("✅ Configured Kaggle API credentials.")
     
+    # Check if the kernel is currently running to prevent interruption
+    kernel_slug = f"{kaggle_username}/step2-voicestroke"
+    try:
+        status_res = subprocess.run(["kaggle", "kernels", "status", kernel_slug], capture_output=True, text=True, check=True)
+        current_status = status_res.stdout.strip().lower()
+        print(f"Current kernel status check: {current_status}")
+        if "running" in current_status or "queued" in current_status:
+            print("⚠️ Kaggle kernel is already running or queued! Skipping push to let the active run complete.")
+            return True
+    except Exception as e:
+        print(f"Warning: Could not check current status: {e}")
+    
     # 2. Deploy and start Kaggle kernel
     print("🚀 Deploying and starting Kaggle kernel...")
     push_dir = "Kaggle_Steps"
