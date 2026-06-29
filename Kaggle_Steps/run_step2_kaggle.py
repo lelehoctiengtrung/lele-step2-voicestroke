@@ -57,10 +57,10 @@ def run_kaggle_kernel():
         print("⚠️ Warning: Kernel status did not transition away from 'complete' after 2 minutes. Proceeding to monitor anyway...")
 
     # 4. Monitor run status
-    print(f"🛰️ Monitoring Kaggle kernel '{kernel_slug}' (Timeout: 120 minutes)...")
+    print(f"🛰️ Monitoring Kaggle kernel '{kernel_slug}' (Timeout: 330 minutes)...")
     
     start_time = time.time()
-    timeout = 7200
+    timeout = 19800
     
     while time.time() - start_time < timeout:
         time.sleep(30)
