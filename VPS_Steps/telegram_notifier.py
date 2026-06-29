@@ -241,7 +241,13 @@ def send_video(video_path: str, caption: str = "", reply_to_post_id: str = None)
         if 'response' in locals():
             logger.error(f"Response content: {response.text}")
         return False
+def send_telegram_notification(text: str, reply_to_post_id: str = None) -> bool:
+    """
+    Backward-compatible alias for send_message.
+    """
+    return send_message(text, reply_to_post_id=reply_to_post_id)
 
 if __name__ == "__main__":
     # Test sending a message
     send_message("<b>[Test]</b> Hệ thống thông báo Telegram Bot cho lelehoctiengtrung đã hoạt động!")
+
