@@ -32,8 +32,29 @@ def run_kaggle_kernel():
         
     subprocess.run(["kaggle", "kernels", "push", "-p", push_dir], check=True)
     
-    # 3. Monitor run status
-    kernel_slug = f"{kaggle_username}/step2-voicestroke"
+    # 3. Wait for the kernel to transition to queued or running state first
+    print("⏳ Waiting for Kaggle to register the new run and transition from previous 'complete' status...")
+    transition_start = time.time()
+    transitioned = False
+    
+    while time.time() - transition_start < 120:
+        time.sleep(15)
+        try:
+            status_res = subprocess.run(["kaggle", "kernels", "status", kernel_slug], capture_output=True, text=True, check=True)
+            output = status_res.stdout.strip()
+            print(f"Initial transition check: {output}")
+            output_lower = output.lower()
+            if "complete" not in output_lower:
+                print("⚡ Kaggle has registered the new run (status changed from complete).")
+                transitioned = True
+                break
+        except Exception as e:
+            print(f"Warning during initial status check: {e}")
+            
+    if not transitioned:
+        print("⚠️ Warning: Kernel status did not transition away from 'complete' after 2 minutes. Proceeding to monitor anyway...")
+
+    # 4. Monitor run status
     print(f"🛰️ Monitoring Kaggle kernel '{kernel_slug}' (Timeout: 120 minutes)...")
     
     start_time = time.time()
