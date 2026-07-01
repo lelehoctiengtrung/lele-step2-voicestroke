@@ -4,6 +4,7 @@ import json
 import shutil
 import subprocess
 import time
+import argparse
 
 # Add parent directory to path to allow importing telegram_notifier
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -110,7 +111,7 @@ def clean_up_session(session_name="step2-session"):
     except Exception:
         pass
 
-def run_colab_workflow():
+def run_colab_workflow(specified_email=None):
     session_name = "step2-session"
     notebook_path = "Kaggle_Steps/step2_voice_stroke.ipynb"
     
@@ -123,6 +124,15 @@ def run_colab_workflow():
     if not accounts:
         send_telegram("⚠️ <b>[Colab Step 2]</b> Không tìm thấy danh sách tài khoản rotated_tokens để chạy dự phòng!")
         sys.exit(1)
+
+    if specified_email:
+        filtered = [acc for acc in accounts if specified_email in acc[0]]
+        if not filtered:
+            send_telegram(f"❌ <b>[Colab Step 2]</b> Không tìm thấy cấu hình cho tài khoản chỉ định: <code>{specified_email}</code>")
+            print(f"Error: Specified email/username '{specified_email}' not found in rotated accounts.")
+            sys.exit(1)
+        accounts = filtered
+        print(f"🎯 Target account specified: {accounts[0][0]}")
         
     # Backup original token.json if it exists and hasn't been backed up yet
     if os.path.exists(TOKEN_JSON_PATH) and not os.path.exists(BACKUP_PATH):
@@ -260,4 +270,8 @@ def run_colab_workflow():
         sys.exit(1)
 
 if __name__ == "__main__":
-    run_colab_workflow()
+    parser = argparse.ArgumentParser(description="Run Colab Step 2 Workflow")
+    parser.add_argument("--email", help="Specify a particular Google account email/username to run on (skips rotation)")
+    args = parser.parse_args()
+    
+    run_colab_workflow(specified_email=args.email)
