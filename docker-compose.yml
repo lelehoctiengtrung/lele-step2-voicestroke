@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  step2-colab:
+    build: .
+    container_name: lele-step2-colab
+    volumes:
+      # Mount the repository directory so local edits/logs persist
+      - .:/app
+      # Mount the host's colab-cli config folder so the container has access to saved accounts/rotated tokens
+      - /home/vpsg16gb/.config/colab-cli:/root/.config/colab-cli
+    environment:
+      - PYTHONUNBUFFERED=1
+      - TZ=Asia/Ho_Chi_Minh
+      # HOME is set to /root so ~/.config resolves to /root/.config
+      - HOME=/root
+    restart: no
