@@ -5,7 +5,7 @@ services:
     build:
       context: ..
       dockerfile: VPS_Steps/Dockerfile
-    container_name: lele-step2-colab
+    container_name: lele-step2-omnivoice
     volumes:
       # Mount the repository directory so local edits/logs persist
       - ..:/app
