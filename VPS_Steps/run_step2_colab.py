@@ -18,6 +18,41 @@ ROTATED_DIR = os.path.join(CONFIG_DIR, "rotated_tokens")
 TOKEN_JSON_PATH = os.path.join(CONFIG_DIR, "token.json")
 BACKUP_PATH = os.path.join(CONFIG_DIR, "token.json.original_backup")
 
+def register_cooldown(email):
+    cooldown_file = os.path.join(CONFIG_DIR, "cooldowns.json")
+    cooldowns = {}
+    if os.path.exists(cooldown_file):
+        try:
+            with open(cooldown_file, "r") as f:
+                cooldowns = json.load(f)
+        except Exception:
+            pass
+    cooldowns[email] = time.time()
+    try:
+        with open(cooldown_file, "w") as f:
+            json.dump(cooldowns, f)
+        print(f"❄️ Registered 30-minute cooldown for account: {email}")
+    except Exception as e:
+        print(f"Error registering cooldown: {e}")
+
+def is_in_cooldown(email, cooldown_duration_minutes=30):
+    cooldown_file = os.path.join(CONFIG_DIR, "cooldowns.json")
+    if not os.path.exists(cooldown_file):
+        return False
+    try:
+        with open(cooldown_file, "r") as f:
+            cooldowns = json.load(f)
+        last_used = cooldowns.get(email)
+        if last_used:
+            elapsed = time.time() - last_used
+            if elapsed < cooldown_duration_minutes * 60:
+                remaining = int((cooldown_duration_minutes * 60 - elapsed) / 60)
+                print(f"⏳ Account {email} is in cooldown. {remaining} minutes remaining.")
+                return True
+    except Exception:
+        pass
+    return False
+
 def send_telegram(msg):
     print(msg)
     if tel:
@@ -91,6 +126,8 @@ def run_colab_workflow():
     # Phase 1: Try allocating GPU session across all accounts
     send_telegram(f"🎙️ <b>[Colab Step 2]</b> Bắt đầu tìm kiếm tài khoản để khởi tạo Colab GPU (T4)...")
     for email, path in accounts:
+        if is_in_cooldown(email):
+            continue
         if not switch_to_account(email, path):
             continue
             
@@ -108,6 +145,7 @@ def run_colab_workflow():
                 send_telegram(f"✅ <b>[Colab Step 2]</b> Khởi tạo thành công GPU session trên tài khoản: <code>{email}</code>")
                 allocated_email = email
                 allocated_gpu = True
+                register_cooldown(email)
                 break
             else:
                 print(f"⚠️ Failed to allocate GPU on {email}. Output: {stdout.strip()} | {stderr.strip()}")
@@ -120,6 +158,8 @@ def run_colab_workflow():
     if not allocated_email:
         send_telegram("⚠️ <b>[Colab Step 2]</b> Hết hạn mức GPU trên tất cả các tài khoản. Chuyển sang phương án dự phòng chạy CPU...")
         for email, path in accounts:
+            if is_in_cooldown(email):
+                continue
             if not switch_to_account(email, path):
                 continue
                 
@@ -137,6 +177,7 @@ def run_colab_workflow():
                     send_telegram(f"✅ <b>[Colab Step 2]</b> Khởi tạo thành công CPU session trên tài khoản: <code>{email}</code>")
                     allocated_email = email
                     allocated_gpu = False
+                    register_cooldown(email)
                     break
                 else:
                     print(f"⚠️ Failed to allocate CPU on {email}. Output: {stdout.strip()} | {stderr.strip()}")
