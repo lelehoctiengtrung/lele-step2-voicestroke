@@ -53,6 +53,15 @@ def is_in_cooldown(email, cooldown_duration_minutes=30):
         pass
     return False
 
+def check_session_exists(session_name):
+    try:
+        res = subprocess.run(["colab", "sessions"], capture_output=True, text=True, timeout=15)
+        if res.returncode == 0 and session_name in (res.stdout or ""):
+            return True
+    except Exception:
+        pass
+    return False
+
 def send_telegram(msg):
     print(msg)
     if tel:
@@ -131,12 +140,18 @@ def run_colab_workflow():
         if not switch_to_account(email, path):
             continue
             
-        clean_up_session(session_name)
-        
+        if check_session_exists(session_name):
+            print(f"✨ Active session '{session_name}' already exists on {email}. Reusing it directly!")
+            send_telegram(f"✅ <b>[Colab Step 2]</b> Phát hiện session '{session_name}' đã tồn tại và sẵn sàng trên: <code>{email}</code>")
+            allocated_email = email
+            allocated_gpu = True
+            register_cooldown(email)
+            break
+            
         print(f"🚀 Attempting to create GPU session on {email}...")
         try:
             cmd = ["colab", "new", "--gpu", "T4", "-s", session_name]
-            res = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+            res = subprocess.run(cmd, capture_output=True, text=True, timeout=45)
             stdout = res.stdout or ""
             stderr = res.stderr or ""
             combined = (stdout + "\n" + stderr).lower()
@@ -150,6 +165,9 @@ def run_colab_workflow():
             else:
                 print(f"⚠️ Failed to allocate GPU on {email}. Output: {stdout.strip()} | {stderr.strip()}")
                 clean_up_session(session_name)
+        except subprocess.TimeoutExpired:
+            print(f"⏳ TimeoutExpired: Allocation of GPU on {email} exceeded 45s limit.")
+            clean_up_session(session_name)
         except Exception as e:
             print(f"⚠️ Exception during GPU allocation on {email}: {e}")
             clean_up_session(session_name)
@@ -163,12 +181,18 @@ def run_colab_workflow():
             if not switch_to_account(email, path):
                 continue
                 
-            clean_up_session(session_name)
-            
+            if check_session_exists(session_name):
+                print(f"✨ Active session '{session_name}' already exists on {email}. Reusing it directly!")
+                send_telegram(f"✅ <b>[Colab Step 2]</b> Phát hiện session '{session_name}' đã tồn tại và sẵn sàng trên: <code>{email}</code>")
+                allocated_email = email
+                allocated_gpu = False
+                register_cooldown(email)
+                break
+                
             print(f"🚀 Attempting to create CPU session on {email}...")
             try:
                 cmd = ["colab", "new", "-s", session_name]
-                res = subprocess.run(cmd, capture_output=True, text=True, timeout=60)
+                res = subprocess.run(cmd, capture_output=True, text=True, timeout=45)
                 stdout = res.stdout or ""
                 stderr = res.stderr or ""
                 combined = (stdout + "\n" + stderr).lower()
@@ -182,6 +206,9 @@ def run_colab_workflow():
                 else:
                     print(f"⚠️ Failed to allocate CPU on {email}. Output: {stdout.strip()} | {stderr.strip()}")
                     clean_up_session(session_name)
+            except subprocess.TimeoutExpired:
+                print(f"⏳ TimeoutExpired: Allocation of CPU on {email} exceeded 45s limit.")
+                clean_up_session(session_name)
             except Exception as e:
                 print(f"⚠️ Exception during CPU allocation on {email}: {e}")
                 clean_up_session(session_name)
