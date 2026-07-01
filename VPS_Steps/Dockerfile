@@ -14,7 +14,7 @@ RUN pip install --no-cache-dir \
 # Set working directory matching Docker mounts
 WORKDIR /app
 
-# Copy files
+# Copy files (since build context will be set to parent, this copies the entire repo)
 COPY . /app
 
 # Run the Colab runner script
