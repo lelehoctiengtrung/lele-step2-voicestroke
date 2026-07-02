@@ -41,53 +41,37 @@ def run_kaggle_kernel():
     kernel_slug = f"{username}/step2-voicestroke"
     
     # Check if the kernel is currently running to prevent interruption
+    should_push = True
     try:
         status_res = subprocess.run(["kaggle", "kernels", "status", kernel_slug], capture_output=True, text=True, check=True)
         current_status = status_res.stdout.strip().lower()
         print(f"Current kernel status check: {current_status}")
         if "running" in current_status or "queued" in current_status:
-            print("⚠️ Kaggle kernel is already running or queued! Skipping push to let the active run complete.")
-            return True
+            print("⚠️ Kaggle kernel is already running or queued! Skipping push, proceeding directly to monitor active run...")
+            should_push = False
     except Exception as e:
         print(f"Warning: Could not check current status: {e}")
         
-    push_dir = "Kaggle_Steps"
-    if not os.path.exists(push_dir):
-        push_dir = "."
-        
-    metadata_path = os.path.join(push_dir, "kernel-metadata.json")
+    if should_push:
+        push_dir = "Kaggle_Steps"
+        if not os.path.exists(push_dir):
+            push_dir = "."
+            
+        metadata_path = os.path.join(push_dir, "kernel-metadata.json")
 
-    def set_metadata_gpu(enable_gpu_val):
-        if os.path.exists(metadata_path):
-            with open(metadata_path, "r", encoding="utf-8") as f:
-                metadata = json.load(f)
-            metadata["id"] = kernel_slug
-            metadata["enable_gpu"] = "true" if enable_gpu_val else "false"
-            with open(metadata_path, "w", encoding="utf-8") as f:
-                json.dump(metadata, f, indent=2)
-            print(f"✏️ Updated kernel-metadata.json: id={kernel_slug}, enable_gpu={metadata['enable_gpu']}")
+        def set_metadata_gpu(enable_gpu_val):
+            if os.path.exists(metadata_path):
+                with open(metadata_path, "r", encoding="utf-8") as f:
+                    metadata = json.load(f)
+                metadata["id"] = kernel_slug
+                metadata["enable_gpu"] = "true" if enable_gpu_val else "false"
+                with open(metadata_path, "w", encoding="utf-8") as f:
+                    json.dump(metadata, f, indent=2)
+                print(f"✏️ Updated kernel-metadata.json: id={kernel_slug}, enable_gpu={metadata['enable_gpu']}")
 
-    # Try 1: Attempt to push with GPU
-    print(f"🚀 Deploying and starting Kaggle kernel for {username} (with GPU)...")
-    set_metadata_gpu(True)
-    push_res = subprocess.run(["kaggle", "kernels", "push", "-p", push_dir], capture_output=True, text=True)
-    
-    stdout_output = push_res.stdout or ""
-    stderr_output = push_res.stderr or ""
-    print(stdout_output)
-    if stderr_output:
-        print(stderr_output)
-        
-    combined_output = (stdout_output + "\n" + stderr_output).lower()
-    pushed_successfully = False
-    
-    if "successfully pushed" in combined_output:
-        print("✅ Kernel successfully pushed with GPU!")
-        pushed_successfully = True
-    elif "quota" in combined_output or "limit" in combined_output:
-        print("⚠️ GPU quota exceeded or limit reached. Falling back to CPU mode...")
-        set_metadata_gpu(False)
-        print(f"🚀 Deploying and starting Kaggle kernel for {username} (with CPU)...")
+        # Try 1: Attempt to push with GPU
+        print(f"🚀 Deploying and starting Kaggle kernel for {username} (with GPU)...")
+        set_metadata_gpu(True)
         push_res = subprocess.run(["kaggle", "kernels", "push", "-p", push_dir], capture_output=True, text=True)
         
         stdout_output = push_res.stdout or ""
@@ -97,38 +81,56 @@ def run_kaggle_kernel():
             print(stderr_output)
             
         combined_output = (stdout_output + "\n" + stderr_output).lower()
-        if "successfully pushed" in combined_output:
-            print("✅ Kernel successfully pushed with CPU!")
-            pushed_successfully = True
-        else:
-            print("❌ Failed to push kernel in CPU mode.")
-    else:
-        print("❌ Failed to push kernel in GPU mode due to a non-quota error.")
+        pushed_successfully = False
         
-    if not pushed_successfully:
-        raise RuntimeError("Failed to push/trigger Kaggle kernel.")
-
-    # 3. Wait for the kernel to transition to queued or running state first
-    print("⏳ Waiting for Kaggle to register the new run...")
-    transition_start = time.time()
-    transitioned = False
-    
-    while time.time() - transition_start < 120:
-        time.sleep(15)
-        try:
-            status_res = subprocess.run(["kaggle", "kernels", "status", kernel_slug], capture_output=True, text=True, check=True)
-            output = status_res.stdout.strip()
-            print(f"Initial transition check: {output}")
-            output_lower = output.lower()
-            if "queued" in output_lower or "running" in output_lower or "complete" in output_lower:
-                print(f"⚡ Kaggle has registered the new run (status: {output}).")
-                transitioned = True
-                break
-        except Exception as e:
-            print(f"Warning during initial status check: {e}")
+        if "successfully pushed" in combined_output:
+            print("✅ Kernel successfully pushed with GPU!")
+            pushed_successfully = True
+        elif "quota" in combined_output or "limit" in combined_output:
+            print("⚠️ GPU quota exceeded or limit reached. Falling back to CPU mode...")
+            set_metadata_gpu(False)
+            print(f"🚀 Deploying and starting Kaggle kernel for {username} (with CPU)...")
+            push_res = subprocess.run(["kaggle", "kernels", "push", "-p", push_dir], capture_output=True, text=True)
             
-    if not transitioned:
-        print("⚠️ Warning: Kernel status did not transition to queued/running after 2 minutes. Proceeding to monitor anyway...")
+            stdout_output = push_res.stdout or ""
+            stderr_output = push_res.stderr or ""
+            print(stdout_output)
+            if stderr_output:
+                print(stderr_output)
+                
+            combined_output = (stdout_output + "\n" + stderr_output).lower()
+            if "successfully pushed" in combined_output:
+                print("✅ Kernel successfully pushed with CPU!")
+                pushed_successfully = True
+            else:
+                print("❌ Failed to push kernel in CPU mode.")
+        else:
+            print("❌ Failed to push kernel in GPU mode due to a non-quota error.")
+            
+        if not pushed_successfully:
+            raise RuntimeError("Failed to push/trigger Kaggle kernel.")
+
+        # 3. Wait for the kernel to transition to queued or running state first
+        print("⏳ Waiting for Kaggle to register the new run...")
+        transition_start = time.time()
+        transitioned = False
+        
+        while time.time() - transition_start < 120:
+            time.sleep(15)
+            try:
+                status_res = subprocess.run(["kaggle", "kernels", "status", kernel_slug], capture_output=True, text=True, check=True)
+                output = status_res.stdout.strip()
+                print(f"Initial transition check: {output}")
+                output_lower = output.lower()
+                if "queued" in output_lower or "running" in output_lower or "complete" in output_lower:
+                    print(f"⚡ Kaggle has registered the new run (status: {output}).")
+                    transitioned = True
+                    break
+            except Exception as e:
+                print(f"Warning during initial status check: {e}")
+                
+        if not transitioned:
+            print("⚠️ Warning: Kernel status did not transition to queued/running after 2 minutes. Proceeding to monitor anyway...")
 
     # 4. Monitor run status
     print(f"🛰️ Monitoring Kaggle kernel '{kernel_slug}' (Timeout: 570 minutes)...")
