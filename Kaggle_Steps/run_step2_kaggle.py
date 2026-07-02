@@ -150,7 +150,7 @@ def run_kaggle_kernel():
             elif "error" in output_lower or "cancel" in output_lower or "fail" in output_lower:
                 print(f"❌ Kaggle kernel execution failed or was cancelled! Status: {output}")
                 try:
-                    subprocess.run(["kaggle", "kernels", "output", kernel_slug, "-p", "kaggle_output"])
+                    subprocess.run(["kaggle", "kernels", "output", kernel_slug, "-p", "Kaggle_Steps/kaggle_output"])
                 except Exception as ex:
                     print(f"Warning fetching output logs: {ex}")
                 raise SystemExit("Kaggle kernel run failed.")

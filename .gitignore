@@ -1,7 +1,7 @@
 VPS_Steps/service_account.json
 VPS_Steps/user_oauth2.json
 VPS_Steps/pipeline_config.json
-kaggle_output/
+Kaggle_Steps/kaggle_output/
 __pycache__/
 *.pyc
 *_output.ipynb
