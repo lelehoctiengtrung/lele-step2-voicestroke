@@ -113,12 +113,12 @@ def clean_up_session(session_name="step2-session"):
 
 def run_colab_workflow(specified_email=None):
     session_name = "step2-session"
-    notebook_path = "Kaggle_Steps/step2_voice_stroke.ipynb"
+    notebook_path = "VPS_Steps/step2_voice_stroke.ipynb"
     
     if not os.path.exists(notebook_path):
         notebook_path = "./step2_voice_stroke.ipynb"
         if not os.path.exists(notebook_path):
-            raise FileNotFoundError(f"Notebook not found at Kaggle_Steps/step2_voice_stroke.ipynb or {notebook_path}")
+            raise FileNotFoundError(f"Notebook not found at VPS_Steps/step2_voice_stroke.ipynb or {notebook_path}")
 
     accounts = get_rotated_accounts()
     if not accounts:
