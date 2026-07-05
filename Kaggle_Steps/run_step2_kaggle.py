@@ -5,7 +5,7 @@ import subprocess
 import urllib.request
 
 def fetch_cred(filename):
-    url = f"https://lele-orchestrator-hub.comics2909-1.workers.dev/api/credentials?token=fbac8f27fd1833c411f62ef2225a3cc9d50b3333&file={filename}"
+    url = f"https://lele-orchestrator-hub.lchau4501.workers.dev/api/credentials?token=fbac8f27fd1833c411f62ef2225a3cc9d50b3333&file={filename}"
     req = urllib.request.Request(url, headers={'User-Agent': 'Mozilla/5.0'})
     try:
         with urllib.request.urlopen(req) as r:
