@@ -25,7 +25,7 @@ _gspread_client = None
 _spreadsheets = {}
 _worksheets = {}
 
-def retry_on_429(func, *args, max_retries=6, backoff_factor=2, **kwargs):
+def retry_on_429(func, *args, max_retries=3, backoff_factor=2, **kwargs):
     """
     Executes a function and retries with exponential backoff if a 429 error occurs.
     """
