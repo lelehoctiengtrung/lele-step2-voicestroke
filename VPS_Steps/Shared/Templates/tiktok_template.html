@@ -227,7 +227,7 @@
             opacity: 0;
         }
         .comp-char {
-            font-family: 'Noto Serif SC', serif, 'Noto Serif SC', 'Noto Serif TC', 'Noto Sans CJK SC', 'Noto Sans CJK TC', sans-serif;
+            font-family: 'Noto Serif SC', 'Noto Serif TC', 'Noto Sans CJK SC', 'Noto Sans CJK TC', serif, sans-serif;
             font-size: 1.15rem;
             font-weight: 700;
             color: #7f1d1d;
@@ -316,7 +316,7 @@
             justify-content: center;
         }
         .step-char {
-            font-family: 'Noto Serif SC', serif, 'Noto Serif SC', 'Noto Serif TC', 'Noto Sans CJK SC', 'Noto Sans CJK TC', sans-serif;
+            font-family: 'Noto Serif SC', 'Noto Serif TC', 'Noto Sans CJK SC', 'Noto Sans CJK TC', serif, sans-serif;
             font-size: 1.5rem;
             font-weight: 700;
             color: #7f1d1d;
@@ -502,7 +502,7 @@
             gap: 10px;
         }
         .ex-hanzi {
-            font-family: 'Noto Serif SC', serif, 'Noto Serif SC', 'Noto Serif TC', 'Noto Sans CJK SC', 'Noto Sans CJK TC', sans-serif;
+            font-family: 'Noto Serif SC', 'Noto Serif TC', 'Noto Sans CJK SC', 'Noto Sans CJK TC', serif, sans-serif;
             font-size: 1.05rem;
             font-weight: 700;
             color: #7f1d1d;
@@ -653,7 +653,7 @@
                     <div class="animated-char-box">
                         <img src="03_Assets/animated character/龙-transparent.gif" alt="Animated Character">
                         <!-- CHARACTER_OVERLAY_START -->
-                        <div class="static-char-overlay" style="display: none; position: absolute; inset: 0; justify-content: center; align-items: center; font-family: 'Noto Serif SC', serif, 'Noto Serif SC', 'Noto Serif TC', 'Noto Sans CJK SC', 'Noto Sans CJK TC', sans-serif; font-size: 85px; color: #7f1d1d; z-index: 15;">龙</div>
+                        <div class="static-char-overlay" style="display: none; position: absolute; inset: 0; justify-content: center; align-items: center; font-family: 'Noto Serif SC', 'Noto Serif TC', 'Noto Sans CJK SC', 'Noto Sans CJK TC', serif, sans-serif; font-size: 85px; color: #7f1d1d; z-index: 15;">龙</div>
                         <!-- CHARACTER_OVERLAY_END -->
                     </div>
                     <div class="char-brand-tag">lelehoctiengtrung</div>
@@ -918,9 +918,45 @@
             }
         }
 
+        let flatPhrases = [];
+        function splitIntoPhrases(text, start, end) {
+            const words = text.trim().split(/\s+/);
+            const totalWords = words.length;
+            if (totalWords === 0) return [];
+            const duration = end - start;
+            let phrases = [];
+            let currentPhrase = [];
+            let wordStartIndex = 0;
+            for (let i = 0; i < words.length; i++) {
+                currentPhrase.push(words[i]);
+                const lastChar = words[i].slice(-1);
+                const isPunctuation = /[.,!?;:]/.test(lastChar);
+                if (isPunctuation || currentPhrase.length >= 8 || i === words.length - 1) {
+                    const phraseText = currentPhrase.join(' ');
+                    const phraseWordCount = currentPhrase.length;
+                    const pStart = start + (wordStartIndex / totalWords) * duration;
+                    const pEnd = start + ((wordStartIndex + phraseWordCount) / totalWords) * duration;
+                    phrases.push({ text: phraseText, start: pStart, end: pEnd });
+                    wordStartIndex += phraseWordCount;
+                    currentPhrase = [];
+                }
+            }
+            return phrases;
+        }
+        function initSubtitles() {
+            flatPhrases = [];
+            if (typeof subtitleData !== 'undefined') {
+                subtitleData.forEach(sub => {
+                    const phrases = splitIntoPhrases(sub.text, sub.start, sub.end);
+                    flatPhrases.push(...phrases);
+                });
+            }
+        }
+        setTimeout(initSubtitles, 0);
+
         function updateSubtitles(time) {
             const subBox = document.getElementById('subtitles-box');
-            const activeSub = subtitleData.find(sub => time >= sub.start && time < sub.end);
+            const activeSub = flatPhrases.find(sub => time >= sub.start && time < sub.end);
             
             if (activeSub) {
                 if (subBox.innerHTML !== activeSub.text) {

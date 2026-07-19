@@ -64,7 +64,7 @@
         }
 
         .slang-title-box {
-            font-family: 'Noto Serif SC', serif, 'Noto Serif SC', 'Noto Serif TC', 'Noto Sans CJK SC', 'Noto Sans CJK TC', sans-serif;
+            font-family: 'Noto Serif SC', 'Noto Serif TC', 'Noto Sans CJK SC', 'Noto Sans CJK TC', serif, sans-serif;
             font-size: 2.8rem;
             font-weight: 900;
             color: #9f1239;
@@ -216,6 +216,42 @@
         window.__timelines["main"] = mainTimeline;
 
         const subtitleData = [];
+        let flatPhrases = [];
+        function splitIntoPhrases(text, start, end) {
+            const words = text.trim().split(/\s+/);
+            const totalWords = words.length;
+            if (totalWords === 0) return [];
+            const duration = end - start;
+            let phrases = [];
+            let currentPhrase = [];
+            let wordStartIndex = 0;
+            for (let i = 0; i < words.length; i++) {
+                currentPhrase.push(words[i]);
+                const lastChar = words[i].slice(-1);
+                const isPunctuation = /[.,!?;:]/.test(lastChar);
+                if (isPunctuation || currentPhrase.length >= 8 || i === words.length - 1) {
+                    const phraseText = currentPhrase.join(' ');
+                    const phraseWordCount = currentPhrase.length;
+                    const pStart = start + (wordStartIndex / totalWords) * duration;
+                    const pEnd = start + ((wordStartIndex + phraseWordCount) / totalWords) * duration;
+                    phrases.push({ text: phraseText, start: pStart, end: pEnd });
+                    wordStartIndex += phraseWordCount;
+                    currentPhrase = [];
+                }
+            }
+            return phrases;
+        }
+        function initSubtitles() {
+            flatPhrases = [];
+            if (typeof subtitleData !== 'undefined') {
+                subtitleData.forEach(sub => {
+                    const phrases = splitIntoPhrases(sub.text, sub.start, sub.end);
+                    flatPhrases.push(...phrases);
+                });
+            }
+        }
+        setTimeout(initSubtitles, 0);
+
         // COVER_TEXT_PLACEHOLDER
 
         function setSimulationTime(time) {
@@ -243,16 +279,16 @@
 
         function updateSubtitles(time) {
             const innerBox = document.getElementById('subtitles-inner');
-            const activeSub = subtitleData.find(s => time >= s.start && time < s.end);
+            const activeSub = flatPhrases.find(s => time >= s.start && time < s.end);
             
             let textToShow = "";
             if (activeSub) {
                 textToShow = activeSub.text;
-            } else if (subtitleData.length > 0) {
-                if (time >= subtitleData[subtitleData.length - 1].end) {
-                    textToShow = subtitleData[subtitleData.length - 1].text;
+            } else if (flatPhrases.length > 0) {
+                if (time >= flatPhrases[flatPhrases.length - 1].end) {
+                    textToShow = flatPhrases[flatPhrases.length - 1].text;
                 } else {
-                    textToShow = subtitleData[0].text;
+                    textToShow = flatPhrases[0].text;
                 }
             }
             
